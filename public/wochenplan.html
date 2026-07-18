@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wochenplan | Dr. Erkens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a5c4c;
+            --primary-light: #2d8a6e;
+            --accent: #c9a962;
+            --text: #1a1a2e;
+            --bg: #fafaf8;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+        }
+
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            width: 380px;
+        }
+        .login-box .icon { font-size: 3rem; margin-bottom: 1rem; }
+        .login-box h2 { margin-bottom: 0.5rem; color: var(--text); }
+        .login-box p { color: #666; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .role-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: transform 0.2s;
+        }
+        .role-btn:hover { transform: translateY(-2px); }
+        .role-btn.dr { background: var(--primary); color: white; }
+        .role-btn.praxis { background: #2d6a9f; color: white; }
+        .role-btn.assistenz { background: #8b5cf6; color: white; }
+
+        .pin-section { display: none; }
+        .pin-section.active { display: block; }
+        .pin-section h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+        .pin-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            letter-spacing: 10px;
+            margin-bottom: 1rem;
+        }
+        .pin-input:focus { outline: none; border-color: var(--primary); }
+        .pin-error { color: #dc3545; font-size: 0.85rem; display: none; margin-top: 0.5rem; }
+        .btn-back {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        .nav-links a { color: var(--text); text-decoration: none; font-size: 0.9rem; }
+        .nav-links a.active { color: var(--primary); font-weight: 600; }
+
+        /* Week Navigation */
+        .week-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: var(--white);
+            margin-bottom: 1rem;
+        }
+        .week-nav button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .week-nav button:hover { background: var(--primary-light); }
+        .week-nav h3 { font-size: 1.1rem; font-family: 'Inter', sans-serif; }
+
+        /* Calendar Grid */
+        .calendar {
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+            padding: 0 1rem;
+        }
+        .day-columns {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+        .day-column {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            min-height: 600px;
+        }
+        .day-header {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+        .day-header.today { background: rgba(26,92,76,0.1); color: var(--primary); }
+        .day-header .date { font-size: 0.8rem; color: #666; }
+        .day-slots { padding: 0.5rem; }
+        .time-slot {
+            padding: 0.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            min-height: 30px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .time-slot:hover { background: #f5f5f5; }
+        .time-slot .time { color: #999; font-size: 0.7rem; }
+        .time-slot .name { font-weight: 500; }
+        .time-slot .service { color: #666; font-size: 0.75rem; }
+
+        .apt-block {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .apt-block:hover { transform: scale(1.02); }
+        .apt-block .time { opacity: 0.8; font-size: 0.7rem; }
+        .apt-block .name { font-weight: 600; }
+        .apt-block .service { opacity: 0.9; font-size: 0.75rem; }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 1024px) {
+            .day-columns { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .day-columns { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <div class="icon">🔒</div>
+            <h2>Zugang zum Wochenplan</h2>
+            <div id="roleSection">
+                <p>Bitte Account auswählen</p>
+                <button class="role-btn dr" onclick="selectRole('Dr. Erkens')">
+                    <span>👨‍⚕️</span> Dr. Erkens
+                </button>
+                <button class="role-btn praxis" onclick="selectRole('Praxis')">
+                    <span>🏥</span> Praxis
+                </button>
+                <button class="role-btn assistenz" onclick="selectRole('Assistenz')">
+                    <span>🦷</span> Assistenz
+                </button>
+            </div>
+            <div class="pin-section" id="pinSection">
+                <h3 id="selectedRoleLabel"></h3>
+                <input type="password" class="pin-input" id="pinInput" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter') checkPin()">
+                <button class="btn btn-primary" style="width:100%; padding:1rem; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; background:var(--primary); color:white;" onclick="checkPin()">Einloggen</button>
+                <button class="btn-back" onclick="backToRoles()">← Zurück</button>
+                <p class="pin-error" id="pinError">Falscher Code</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Dr. Erkens</a>
+            <ul class="nav-links">
+                <li><a href="/">Startseite</a></li>
+                <li><a href="/wochenplan.html" class="active">Wochenplan</a></li>
+                <li><a href="/login.html">Patienten-Login</a></li>
+                <li><a href="/admin.html" id="adminLink" style="display:none;">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="week-nav">
+        <button onclick="prevWeek()">←</button>
+        <h3 id="weekRange"></h3>
+        <button onclick="nextWeek()">→</button>
+    </div>
+
+    <div class="calendar">
+        <div class="day-columns" id="dayColumns"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let selectedRole = '';
+        let currentWeekStart = getWeekStart(new Date());
+        let appointments = [];
+
+        const timeSlots = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'];
+        const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            d.setHours(0,0,0,0);
+            return d;
+        }
+
+        function formatDateISO(date) { return date.toISOString().split('T')[0]; }
+        function formatDate(date) { return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+
+        // Login
+        function selectRole(role) {
+            selectedRole = role;
+            document.getElementById('roleSection').style.display = 'none';
+            document.getElementById('pinSection').classList.add('active');
+            document.getElementById('selectedRoleLabel').textContent = 'Code für ' + role;
+            document.getElementById('pinInput').focus();
+        }
+
+        function backToRoles() {
+            document.getElementById('roleSection').style.display = 'block';
+            document.getElementById('pinSection').classList.remove('active');
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinError').style.display = 'none';
+        }
+
+        async function checkPin() {
+            const pin = document.getElementById('pinInput').value;
+            if (!pin) return;
+
+            try {
+                const res = await fetch('/api/wochenplan/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin, role: selectedRole })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    sessionStorage.setItem('wochenplan_session', data.sessionId);
+                    sessionStorage.setItem('wochenplan_role', data.role);
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    if (data.role === 'Dr. Erkens') {
+                        document.getElementById('adminLink').style.display = 'inline';
+                    }
+                    loadAppointments();
+                } else {
+                    document.getElementById('pinError').style.display = 'block';
+                    document.getElementById('pinInput').value = '';
+                }
+            } catch (e) {
+                document.getElementById('pinError').style.display = 'block';
+            }
+        }
+
+        // Verify session
+        async function verifySession() {
+            const sid = sessionStorage.getItem('wochenplan_session');
+            if (!sid) return;
+
+            try {
+                const res = await fetch('/api/wochenplan/verify', {
+                    headers: { 'Authorization': 'Bearer ' + sid }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    if (data.role === 'Dr. Erkens') {
+                        document.getElementById('adminLink').style.display = 'inline';
+                    }
+                    loadAppointments();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // Calendar
+        function renderCalendar() {
+            const start = new Date(currentWeekStart);
+            document.getElementById('weekRange').textContent =
+                formatDate(start) + ' – ' + formatDate(new Date(start.getTime() + 4 * 86400000));
+
+            const grid = document.getElementById('dayColumns');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = formatDateISO(date);
+                const isToday = date.toDateString() === new Date().toDateString();
+
+                const col = document.createElement('div');
+                col.className = 'day-column';
+                col.innerHTML = `
+                    <div class="day-header ${isToday ? 'today' : ''}">
+                        ${dayNames[i]}<br>
+                        <span class="date">${date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}</span>
+                    </div>
+                    <div class="day-slots">
+                        ${timeSlots.map(t => {
+                            const apt = appointments.find(a => a.date === dateStr && a.time === t);
+                            return apt
+                                ? `<div class="apt-block"><div class="time">${apt.time}</div><div class="name">${apt.name}</div><div class="service">${apt.service}</div></div>`
+                                : `<div class="time-slot"><span class="time">${t}</span></div>`;
+                        }).join('')}
+                    </div>
+                `;
+                grid.appendChild(col);
+            }
+        }
+
+        async function loadAppointments() {
+            try {
+                const res = await fetch('/api/appointments');
+                appointments = await res.json();
+                renderCalendar();
+            } catch (e) { console.error(e); }
+        }
+
+        function prevWeek() { currentWeekStart.setDate(currentWeekStart.getDate() - 7); renderCalendar(); }
+        function nextWeek() { currentWeekStart.setDate(currentWeekStart.getDate() + 7); renderCalendar(); }
+
+        // Init
+        verifySession();
+    </script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Dr. Erkens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a5c4c;
+            --primary-light: #2d8a6e;
+            --accent: #c9a962;
+            --text: #1a1a2e;
+            --bg: #fafaf8;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem 2rem;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem; }
+        .nav-links a:hover, .nav-links a.active { color: var(--white); }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 { font-size: 2rem; color: var(--primary); }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: var(--white);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+        .tab.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .stat-card h3 { font-size: 0.8rem; color: #666; font-weight: 500; margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        th { font-weight: 600; color: #666; font-size: 0.8rem; text-transform: uppercase; }
+        tr:hover { background: #f9f9f9; }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-danger { background: #dc3545; color: var(--white); }
+        .btn-success { background: #28a745; color: var(--white); }
+        .btn-outline { background: none; border: 1px solid #ddd; color: var(--text); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-offen { background: #fff3cd; color: #856404; }
+        .badge-bestätigt { background: #d4edda; color: #155724; }
+        .badge-abgesagt { background: #f8d7da; color: #721c24; }
+        .badge-genehmigt { background: #d4edda; color: #155724; }
+        .badge-abgelehnt { background: #f8d7da; color: #721c24; }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+        .day-card {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .day-card h4 { font-size: 0.85rem; margin-bottom: 0.5rem; }
+        .day-card input[type="checkbox"] { margin-bottom: 0.5rem; }
+        .day-card input[type="time"] {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .vacation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 400px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .schedule-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Dr. Erkens</a>
+            <ul class="nav-links">
+                <li><a href="/wochenplan.html">Wochenplan</a></li>
+                <li><a href="#" class="active">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Admin Panel</h1>
+            <button class="btn btn-outline" onclick="logout()">Abmelden</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showPanel('dashboard')">Dashboard</button>
+            <button class="tab" onclick="showPanel('appointments')">Termine</button>
+            <button class="tab" onclick="showPanel('users')">Patienten</button>
+            <button class="tab" onclick="showPanel('schedule')">Arbeitsplan</button>
+            <button class="tab" onclick="showPanel('vacation')">Urlaub</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="panel active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Termine heute</h3>
+                    <div class="value" id="todayCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Offene Termine</h3>
+                    <div class="value" id="openCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Patienten</h3>
+                    <div class="value" id="userCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Urlaubsanträge</h3>
+                    <div class="value" id="vacationCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Termine -->
+        <div id="appointments" class="panel">
+            <div class="card">
+                <h2>Alle Termine</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Leistung</th>
+                            <th>Datum</th>
+                            <th>Uhrzeit</th>
+                            <th>Status</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Patienten -->
+        <div id="users" class="panel">
+            <div class="card">
+                <h2>Registrierte Patienten</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>E-Mail</th>
+                            <th>Telefon</th>
+                            <th>Registriert</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Arbeitsplan -->
+        <div id="schedule" class="panel">
+            <div class="card">
+                <h2>Wochenarbeitsplan</h2>
+                <div class="schedule-grid" id="scheduleGrid"></div>
+                <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveSchedule()">Speichern</button>
+            </div>
+        </div>
+
+        <!-- Urlaub -->
+        <div id="vacation" class="panel">
+            <div class="card">
+                <h2>Urlaubsanträge</h2>
+                <div id="vacationList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const session = sessionStorage.getItem('admin_session');
+        if (!session) window.location.href = '/wochenplan.html';
+
+        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+
+        function showPanel(id) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '/wochenplan.html';
+        }
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/api/appointments');
+                const apts = await res.json();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('todayCount').textContent = apts.filter(a => a.date === today).length;
+                document.getElementById('openCount').textContent = apts.filter(a => a.status === 'offen').length;
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadAppointments() {
+            try {
+                const res = await fetch('/api/appointments');
+                const apts = await res.json();
+                document.getElementById('appointmentsTable').innerHTML = apts.map(a => `
+                    <tr>
+                        <td>${a.name}</td>
+                        <td>${a.service}</td>
+                        <td>${a.date}</td>
+                        <td>${a.time}</td>
+                        <td><span class="badge badge-${a.status}">${a.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-success" onclick="updateApt('${a.id}', 'bestätigt')">✓</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteApt('${a.id}')">✕</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function updateApt(id, status) {
+            await fetch(`/api/appointments/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session },
+                body: JSON.stringify({ status })
+            });
+            loadAppointments();
+            showToast('Status aktualisiert');
+        }
+
+        async function deleteApt(id) {
+            if (!confirm('Termin wirklich löschen?')) return;
+            await fetch(`/api/appointments/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + session }
+            });
+            loadAppointments();
+            showToast('Termin gelöscht');
+        }
+
+        async function loadSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = days.map((day, i) => `
+                <div class="day-card">
+                    <h4>${day.slice(0, 2)}</h4>
+                    <input type="checkbox" id="work_${i}" checked>
+                    <input type="time" id="start_${i}" value="08:00">
+                    <input type="time" id="end_${i}" value="18:00">
+                </div>
+            `).join('');
+
+            try {
+                const res = await fetch('/api/work-schedule');
+                const schedule = await res.json();
+                schedule.forEach(s => {
+                    const i = s.day_of_week;
+                    document.getElementById(`work_${i}`).checked = s.is_workday;
+                    document.getElementById(`start_${i}`).value = s.start_time || '08:00';
+                    document.getElementById(`end_${i}`).value = s.end_time || '18:00';
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveSchedule() {
+            for (let i = 0; i < 7; i++) {
+                await fetch('/api/work-schedule', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session },
+                    body: JSON.stringify({
+                        day_of_week: i,
+                        is_workday: document.getElementById(`work_${i}`).checked,
+                        start_time: document.getElementById(`start_${i}`).value,
+                        end_time: document.getElementById(`end_${i}`).value
+                    })
+                });
+            }
+            showToast('Arbeitsplan gespeichert');
+        }
+
+        async function loadVacation() {
+            try {
+                const res = await fetch('/api/vacation');
+                const vacations = await res.json();
+                document.getElementById('vacationCount').textContent = vacations.filter(v => v.status === 'offen').length;
+                document.getElementById('vacationList').innerHTML = vacations.length === 0
+                    ? '<p style="color: #666; text-align: center; padding: 2rem;">Keine Urlaubsanträge vorhanden.</p>'
+                    : vacations.map(v => `
+                        <div class="vacation-item">
+                            <div>
+                                <strong>${v.employee}</strong><br>
+                                <small>${v.start_date} bis ${v.end_date} (${v.days} Tage)</small>
+                            </div>
+                            <div>
+                                <span class="badge badge-${v.status}">${v.status}</span>
+                                ${v.status === 'offen' ? `
+                                    <button class="btn btn-sm btn-success" onclick="reviewVacation('${v.id}', 'genehmigt')">✓</button>
+                                    <button class="btn btn-sm btn-danger" onclick="reviewVacation('${v.id}', 'abgelehnt')">✕</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function reviewVacation(id, status) {
+            await fetch(`/api/vacation/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session },
+                body: JSON.stringify({ status })
+            });
+            loadVacation();
+            showToast(`Urlaub ${status}`);
+        }
+
+        // Init
+        loadDashboard();
+        loadAppointments();
+        loadSchedule();
+        loadVacation();
+    </script>
+</body>
+</html>

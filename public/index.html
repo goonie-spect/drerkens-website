@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. med. Friedhelm Erkens | Moderne Orthopädie und Sportmedizin</title>
+    <meta name="description" content="Orthopädische Privatpraxis in Kleve. Moderne Diagnostik und Therapie bei Muskel- und Gelenkschmerzen.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #1a5c4c;
+            --primary-light: #2d8a6e;
+            --primary-dark: #0f3d32;
+            --accent: #c9a962;
+            --text: #1a1a2e;
+            --text-light: #555;
+            --bg: #fafaf8;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+            padding: 0.75rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled .logo { color: var(--primary); }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after { width: 100%; }
+        .navbar.scrolled .nav-links a { color: var(--text); }
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-cta {
+            background: var(--accent) !important;
+            color: var(--white) !important;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600 !important;
+        }
+
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(201,169,98,0.4); }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .mobile-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled .mobile-toggle span { background: var(--text); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(201,169,98,0.15) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content { color: var(--white); }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+            display: block;
+        }
+
+        .hero-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(201,169,98,0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 500px;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-stats {
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.8rem; font-weight: 700; color: var(--primary); font-family: 'Playfair Display', serif; }
+        .stat-label { font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem; }
+
+        /* Section Styles */
+        section { padding: 6rem 2rem; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        /* Problem Section */
+        .problem-section { background: var(--white); }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .problem-card {
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            background: var(--bg);
+            border: 1px solid #eee;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .problem-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .problem-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .problem-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Approach Section */
+        .approach-section {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .approach-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .approach-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .approach-content h2 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .approach-content p {
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .approach-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-content p { font-size: 0.9rem; opacity: 0.8; margin: 0; }
+
+        .approach-visual {
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--radius);
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .approach-image {
+            width: 100%;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            overflow: hidden;
+        }
+
+        .approach-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        /* Services Section */
+        .services-section { background: var(--bg); }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-content {
+            padding: 2.5rem;
+        }
+
+        .service-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .service-content p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .service-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .service-link:hover { gap: 1rem; color: var(--accent); }
+
+        .service-image {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            min-height: 300px;
+        }
+
+        .service-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* About Section */
+        .about-section { background: var(--white); }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image-main {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            overflow: hidden;
+        }
+
+        .about-image-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-experience {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            background: var(--accent);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .about-experience .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            display: block;
+        }
+
+        .about-experience .label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .about-content h2 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-content > p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(26,92,76,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .feature span { font-weight: 500; font-size: 0.95rem; }
+
+        /* Testimonial Section */
+        .testimonial-section { background: var(--bg); }
+
+        .testimonial-card {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 3rem;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .testimonial-stars {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .testimonial-role {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: var(--white);
+            text-align: center;
+            padding: 5rem 2rem;
+        }
+
+        .cta-section h2 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Contact Section */
+        .contact-section { background: var(--white); }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(26,92,76,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .contact-details h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-details p, .contact-details a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .contact-details a:hover { color: var(--primary); }
+
+        .contact-form {
+            background: var(--bg);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,92,76,0.1);
+        }
+
+        .form-group textarea { min-height: 120px; resize: vertical; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            opacity: 0.8;
+            font-size: 0.95rem;
+            max-width: 300px;
+        }
+
+        .footer-col h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .footer-col ul { list-style: none; }
+
+        .footer-col li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-col a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-col a:hover { color: var(--accent); }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover { background: var(--accent); }
+
+        /* Floating Contact Button */
+        .floating-contact {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .floating-contact:hover {
+            transform: scale(1.1);
+            background: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-content { order: 1; }
+            .hero-visual { order: 0; margin-bottom: 2rem; }
+            .hero-text { margin: 0 auto 2rem; }
+            .hero-buttons { justify-content: center; }
+            .hero-stats { left: 50%; transform: translateX(-50%); }
+            .hero-image-wrapper { max-width: 400px; margin: 0 auto; }
+            
+            .approach-container { grid-template-columns: 1fr; }
+            .about-grid { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { 
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                box-shadow: var(--shadow);
+            }
+            .nav-links.active { display: flex; }
+            .nav-links a { color: var(--text); }
+            .mobile-toggle { display: flex; }
+            
+            .problem-grid { grid-template-columns: 1fr; }
+            .service-card { grid-template-columns: 1fr; }
+            .service-image { min-height: 200px; }
+            .about-features { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">Dr. Erkens</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#start">Startseite</a></li>
+                <li><a href="#problem">Problem</a></li>
+                <li><a href="#vorgehen">Vorgehen</a></li>
+                <li><a href="#leistungen">Leistungen</a></li>
+                <li><a href="#ueber">Über mich</a></li>
+                <li><a href="#kontakt" class="nav-cta">Termin vereinbaren</a></li>
+            </ul>
+            <div class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="start">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>&#127973;</span>
+                    <span>Orthopädische Privatpraxis in Kleve</span>
+                </div>
+                <h1>
+                    Arthrose, Bandscheibe, Rückenschmerz ...
+                    <span>Finden wir die Ursache.</span>
+                </h1>
+                <p class="hero-text">
+                    90% aller Muskel- und Gelenkschmerzen sind die Folge einseitiger Belastung und Ungleichgewicht. 
+                    Gemeinsam bringen wir Ihren Körper zurück in seine natürliche, schmerzfreie Balance.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#kontakt" class="btn btn-primary">
+                        Termin vereinbaren
+                        <span>&#8594;</span>
+                    </a>
+                    <a href="#vorgehen" class="btn btn-secondary">
+                        Mein Vorgehen
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-image-wrapper">
+                    <div class="hero-image">
+                        <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=500&fit=crop" alt="Dr. Erkens - Orthopädie">
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">20+</div>
+                            <div class="stat-label">Jahre Erfahrung</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">10k+</div>
+                            <div class="stat-label">Patienten</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section" id="problem">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label">Das Problem</span>
+                <h2>Warum Schmerzen immer wiederkehren</h2>
+                <p>Die meisten Behandlungen bekämpfen nur die Symptome — nicht die Ursache Ihrer Schmerzen.</p>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">&#127919;</div>
+                    <h3>Symptombehandlung</h3>
+                    <p>Massagen, Spritzen und Salben lindern kurzfristig den Schmerz, beseitigen aber nicht die Ursache.</p>
+                </div>
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">&#9878;&#65039;</div>
+                    <h3>Körperliche Schieflage</h3>
+                    <p>Einseitige Belastung im Alltag und Sport bringt Ihren Körper aus dem Gleichgewicht.</p>
+                </div>
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">&#128260;</div>
+                    <h3>Wiederkehrende Schmerzen</h3>
+                    <p>Ohne Ursachenbehandlung kehren die Beschwerden immer wieder zurück — oft an der gleichen Stelle.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Approach Section -->
+    <section class="approach-section" id="vorgehen">
+        <div class="container">
+            <div class="approach-container">
+                <div class="approach-content fade-in">
+                    <span class="section-label" style="color: var(--accent);">Mein Vorgehen</span>
+                    <h2>Schritt für Schritt zu Ihrer schmerzfreien Balance</h2>
+                    <p>
+                        Mit einer umfassenden Diagnostik finden wir die Ursachen Ihrer Schmerzen. 
+                        Dann entwickeln wir gemeinsam einen individuellen Trainings- und Bewegungsplan.
+                    </p>
+                    <div class="approach-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Ausführliches Gespräch</h4>
+                                <p>Wir nehmen uns Zeit, um Ihr Schmerzmuster zu verstehen.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>4D-Bewegungsanalyse</h4>
+                                <p>Ursachen von Fehlmuster und Dysbalance werden sichtbar.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Individueller Trainingsplan</h4>
+                                <p>Gemeinsam bringen wir Ihren Körper zurück in Balance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="approach-visual fade-in">
+                    <div class="approach-image">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop" alt="Diagnostik">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section" id="leistungen">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label">Leistungen</span>
+                <h2>Moderne Orthopädie und Sportmedizin</h2>
+                <p>Umfassende Diagnostik und individuelle Therapie für Ihre schmerzfreie Zukunft.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card fade-in">
+                    <div class="service-content">
+                        <h3>Diagnostik</h3>
+                        <p>Mit der patentierten 4D-Bewegungsanalyse messen wir die Statik und Dynamik Ihrer Wirbelsäule und lokalisieren Ungleichgewichte.</p>
+                        <a href="#" class="service-link">
+                            Mehr erfahren
+                            <span>&#8594;</span>
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=300&fit=crop" alt="Diagnostik">
+                    </div>
+                </div>
+                <div class="service-card fade-in">
+                    <div class="service-content">
+                        <h3>Therapie</h3>
+                        <p>Kraft, Beweglichkeit und Koordination zurück in Balance bringen — aktiv und nachhaltig.</p>
+                        <a href="#" class="service-link">
+                            Mehr erfahren
+                            <span>&#8594;</span>
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop" alt="Therapie">
+                    </div>
+                </div>
+                <div class="service-card fade-in">
+                    <div class="service-content">
+                        <h3>Sportmedizin</h3>
+                        <p>Leistungsdiagnostik und Mentaltraining für ambitionierte Sportler — vom Marathonläufer bis zum Golfer.</p>
+                        <a href="#" class="service-link">
+                            Mehr erfahren
+                            <span>&#8594;</span>
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1461896836934-bd45ba8d4af8?w=400&h=300&fit=crop" alt="Sportmedizin">
+                    </div>
+                </div>
+                <div class="service-card fade-in">
+                    <div class="service-content">
+                        <h3>Golf & Orthopädie</h3>
+                        <p>Schmerzfrei auf dem Green: Welche Körperteile sind gefährdet und wie schützen Sie sich?</p>
+                        <a href="#" class="service-link">
+                            Mehr erfahren
+                            <span>&#8594;</span>
+                        </a>
+                    </div>
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=400&h=300&fit=crop" alt="Golf">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="ueber">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-image fade-in">
+                    <div class="about-image-main">
+                        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=500&h=500&fit=crop" alt="Dr. Erkens">
+                    </div>
+                    <div class="about-experience">
+                        <span class="number">20+</span>
+                        <span class="label">Jahre Erfahrung</span>
+                    </div>
+                </div>
+                <div class="about-content fade-in">
+                    <span class="section-label">Über Dr. Erkens</span>
+                    <h2>Ihr Experte für Orthopädie und Sportmedizin</h2>
+                    <p>
+                        Als Facharzt für Orthopädie und Sportmedizin bringe ich mehr als 20 Jahre Erfahrung mit. 
+                        Als ehemaliger Mannschaftsarzt von Schalke 04 und begeisterter Marathonläufer weiß ich, 
+                        was Körper und Psyche brauchen, um leistungsfähig und schmerzfrei zu bleiben.
+                    </p>
+                    <div class="about-features">
+                        <div class="feature">
+                            <div class="feature-icon">&#9989;</div>
+                            <span>Facharzt für Orthopädie</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">&#9989;</div>
+                            <span>Sportmedizin</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">&#9989;</div>
+                            <span>Leistungsdiagnostik</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">&#9989;</div>
+                            <span>Mentaltraining</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">&#9989;</div>
+                            <span>Ehem. Schalke 04 Arzt</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">&#9989;</div>
+                            <span>Marathonläufer</span>
+                        </div>
+                    </div>
+                    <a href="#kontakt" class="btn btn-primary">
+                        Termin vereinbaren
+                        <span>&#8594;</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label">Erfahrungen</span>
+                <h2>Was Patienten sagen</h2>
+            </div>
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="testimonial-text">
+                    "Nach Jahren mit Rückenschmerzen hat mir Dr. Erkens endlich geholfen, die Ursache zu finden. 
+                    Der individuelle Trainingsplan hat mein Leben verändert. Ich bin schmerzfrei und fühle mich fitter als je zuvor."
+                </p>
+                <div class="testimonial-author">Maria K.</div>
+                <div class="testimonial-role">Patientin seit 2022</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Bereit für Ihre schmerzfreie Zukunft?</h2>
+            <p>Vereinbaren Sie jetzt Ihren Termin und starten Sie den Weg zurück in Ihre natürliche Balance.</p>
+            <div class="cta-buttons">
+                <a href="tel:+4928219736381" class="btn btn-white">
+                    &#128222; Jetzt anrufen
+                </a>
+                <a href="#kontakt" class="btn btn-secondary">
+                    &#9993; Kontaktformular
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="kontakt">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label">Kontakt</span>
+                <h2>Termin vereinbaren</h2>
+                <p>Wir nehmen uns Zeit für Sie. Vereinbaren Sie jetzt Ihren persönlichen Termin.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info fade-in">
+                    <h3>Kontaktdaten</h3>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#128205;</div>
+                        <div class="contact-details">
+                            <h4>Adresse</h4>
+                            <p>Tiergartenstraße 27<br>D-47533 Kleve</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#128222;</div>
+                        <div class="contact-details">
+                            <h4>Telefon</h4>
+                            <a href="tel:+4928219736381">0 28 21 – 97 36 38 1</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#9993;</div>
+                        <div class="contact-details">
+                            <h4>E-Mail</h4>
+                            <a href="mailto:kontakt@drerkens.de">kontakt@drerkens.de</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#128336;</div>
+                        <div class="contact-details">
+                            <h4>Öffnungszeiten</h4>
+                            <p>Mo – Do: 8 – 12 Uhr & 14 – 18 Uhr<br>Freitag: Nach Vereinbarung</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form fade-in">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" placeholder="Ihr Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">E-Mail</label>
+                                <input type="email" id="email" placeholder="Ihre E-Mail" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefon</label>
+                            <input type="tel" id="phone" placeholder="Ihre Telefonnummer">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Ihre Nachricht</label>
+                            <textarea id="message" placeholder="Beschreiben Sie kurz Ihr Anliegen..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                            Nachricht senden
+                            <span>&#8594;</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>Dr. med. Friedhelm Erkens</h3>
+                <p>Orthopädische Privatpraxis für moderne Orthopädie und Sportmedizin in Kleve.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#start">Startseite</a></li>
+                    <li><a href="#problem">Problem</a></li>
+                    <li><a href="#vorgehen">Vorgehen</a></li>
+                    <li><a href="#leistungen">Leistungen</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Leistungen</h4>
+                <ul>
+                    <li><a href="#">Diagnostik</a></li>
+                    <li><a href="#">Therapie</a></li>
+                    <li><a href="#">Sportmedizin</a></li>
+                    <li><a href="#">Golf & Orthopädie</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontakt</h4>
+                <ul>
+                    <li><a href="tel:+4928219736381">0 28 21 – 97 36 38 1</a></li>
+                    <li><a href="mailto:kontakt@drerkens.de">kontakt@drerkens.de</a></li>
+                    <li><a href="#">Termin vereinbaren</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Dr. med. Friedhelm Erkens. Alle Rechte vorbehalten.</p>
+            <div class="footer-social">
+                <a href="#">f</a>
+                <a href="#">in</a>
+                <a href="#">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Contact Button -->
+    <a href="tel:+4928219736381" class="floating-contact">&#128222;</a>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobileToggle').addEventListener('click', () => {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('navLinks').classList.remove('active');
+                }
+            });
+        });
+
+        // Fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Form submission
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Vielen Dank für Ihre Nachricht! Wir melden uns bald bei Ihnen.');
+        });
+    </script>
+</body>
+</html>
