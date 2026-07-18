@@ -4,279 +4,841 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wochenplan | Dr. Erkens</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #1a5c4c;
-            --primary-light: #2d8a6e;
-            --accent: #c9a962;
-            --text: #1a1a2e;
-            --bg: #fafaf8;
-            --white: #ffffff;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --radius: 16px;
-        }
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
         }
 
-        /* Login Overlay */
-        .login-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 9999;
+        .top-nav {
+            background: linear-gradient(135deg, #1a6b5c, #0f4a3f);
+            padding: 15px 30px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-        }
-        .login-overlay.hidden { display: none; }
-        .login-box {
-            background: var(--white);
-            padding: 3rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            width: 380px;
-        }
-        .login-box .icon { font-size: 3rem; margin-bottom: 1rem; }
-        .login-box h2 { margin-bottom: 0.5rem; color: var(--text); }
-        .login-box p { color: #666; margin-bottom: 1.5rem; font-size: 0.9rem; }
-        .role-btn {
-            width: 100%;
-            padding: 1rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: transform 0.2s;
-        }
-        .role-btn:hover { transform: translateY(-2px); }
-        .role-btn.dr { background: var(--primary); color: white; }
-        .role-btn.praxis { background: #2d6a9f; color: white; }
-        .role-btn.assistenz { background: #8b5cf6; color: white; }
-
-        .pin-section { display: none; }
-        .pin-section.active { display: block; }
-        .pin-section h3 { margin-bottom: 1rem; font-size: 1.1rem; }
-        .pin-input {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.5rem;
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            letter-spacing: 10px;
-            margin-bottom: 1rem;
-        }
-        .pin-input:focus { outline: none; border-color: var(--primary); }
-        .pin-error { color: #dc3545; font-size: 0.85rem; display: none; margin-top: 0.5rem; }
-        .btn-back {
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: var(--white);
-            padding: 1rem 2rem;
-            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        .nav-container {
+        .top-nav h2 { color: white; font-size: 1.2rem; }
+        .top-nav-links { display: flex; gap: 10px; }
+        .top-nav-links a {
+            color: white;
+            text-decoration: none;
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .top-nav-links a:hover,
+        .top-nav-links a.active {
+            background: white;
+            color: #1a6b5c;
+            border-color: white;
+        }
+
+        .toolbar {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 20px 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--primary);
-            text-decoration: none;
-        }
-        .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
-        .nav-links a { color: var(--text); text-decoration: none; font-size: 0.9rem; }
-        .nav-links a.active { color: var(--primary); font-weight: 600; }
 
-        /* Week Navigation */
-        .week-nav {
+        .date-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .date-nav button {
+            padding: 10px 16px;
+            border: none;
+            background: #1a6b5c;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        .date-nav button:hover { background: #0f4a3f; }
+        .date-nav span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+        }
+        .stat {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a6b5c;
+        }
+        .stat-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .raster-wrapper {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px 20px;
+        }
+
+        .raster-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .raster-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            height: auto;
+        }
+
+        .time-slot-header {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #666;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .day-column {
+            border-right: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+        .day-column:last-child { border-right: none; }
+
+        .day-header {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            background: #e8f5f2;
+            border-bottom: 1px solid #e9ecef;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .day-header.today { background: #1a6b5c; color: white; }
+        .day-header-name { font-size: 0.85rem; }
+        .day-header-date { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
+
+        .day-slots {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .slot-cell {
+            flex: 1;
+            border-bottom: 1px solid #e9ecef;
+            padding: 2px 4px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-height: 64px;
+            display: flex;
+            align-items: stretch;
+            gap: 6px;
+        }
+        .slot-cell:hover { background: #f0f9f7; }
+        .slot-cell.drag-over { background: #d4edda; border: 2px dashed #28a745; }
+        .slot-time {
+            font-size: 0.7rem;
+            color: #1a6b5c;
+            font-weight: 600;
+            min-width: 36px;
+            flex-shrink: 0;
+        }
+
+        .appointment-card {
+            background: linear-gradient(135deg, #1a6b5c, #2d9e87);
+            color: white;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex-grow: 1;
+            min-width: 0;
+        }
+        .appointment-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(26, 107, 92, 0.3);
+        }
+        .appointment-card.dragging { opacity: 0.4; cursor: grabbing; }
+        .appointment-card.pending {
+            background: linear-gradient(135deg, #ffc107, #ffca2c);
+            color: #1a1a2e;
+        }
+        .appointment-card.confirmed {
+            background: linear-gradient(135deg, #1a6b5c, #2d9e87);
+        }
+        .appointment-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .appointment-info {
+            font-size: 0.65rem;
+            opacity: 0.85;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .appointment-icon {
+            font-size: 0.75rem;
+        }
+        .card-actions {
+            display: flex;
+            gap: 3px;
+            margin-top: 3px;
+        }
+        .btn-card-confirm, .btn-card-cancel {
+            border: none;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-size: 0.55rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn-card-confirm {
+            background: #28a745;
+            color: white;
+        }
+        .btn-card-cancel {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-card-confirm:hover, .btn-card-cancel:hover {
+            opacity: 0.8;
+        }
+
+        .add-slot-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a6b5c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .slot-cell:hover .add-slot-btn { opacity: 1; }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+        .legend-color.confirmed { background: linear-gradient(135deg, #1a6b5c, #2d9e87); }
+        .legend-color.pending { background: linear-gradient(135deg, #ffc107, #ffca2c); }
+        .legend-color.empty { background: #f8f9fa; border: 2px solid #e9ecef; }
+
+        /* Detail Modal (beim Klick auf Termin) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+        .modal-detail-row:last-child { border-bottom: none; }
+        .modal-detail-label { color: #666; }
+        .modal-detail-value { font-weight: 600; text-align: right; }
+
+        .modal-form .form-group { margin-bottom: 12px; }
+        .modal-form label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .modal-form input,
+        .modal-form select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .modal-form input:focus,
+        .modal-form select:focus {
+            outline: none;
+            border-color: #1a6b5c;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .modal-actions button {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .btn-confirm {
+            background: #28a745;
+            color: white;
+        }
+        .btn-confirm:hover { background: #218838; }
+        .btn-save {
+            background: #1a6b5c;
+            color: white;
+        }
+        .btn-save:hover { background: #0f4a3f; }
+        .btn-cancel {
+            background: #e9ecef;
+            color: #666;
+        }
+        .btn-cancel:hover { background: #dee2e6; }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-delete:hover { background: #c82333; }
+
+        /* Confirmation Modal für Drag & Drop */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+            align-items: center;
+            justify-content: center;
+        }
+        .confirm-modal.active { display: flex; }
+        .confirm-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
+        .confirm-icon {
+            width: 60px; height: 60px;
+            background: #fff3cd;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 2rem;
-            padding: 1.5rem;
-            background: var(--white);
-            margin-bottom: 1rem;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
         }
-        .week-nav button {
-            background: var(--primary);
-            color: white;
+        .confirm-content h3 { margin-bottom: 15px; font-size: 1.2rem; }
+        .confirm-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .confirm-details p { margin: 8px 0; font-size: 0.9rem; }
+        .confirm-details .old { color: #dc3545; text-decoration: line-through; }
+        .confirm-details .new { color: #28a745; font-weight: 600; }
+        .email-notice {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .email-notice svg { width: 16px; height: 16px; }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .confirm-actions button {
+            flex: 1;
+            padding: 12px;
             border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .week-nav button:hover { background: var(--primary-light); }
-        .week-nav h3 { font-size: 1.1rem; font-family: 'Inter', sans-serif; }
-
-        /* Calendar Grid */
-        .calendar {
-            max-width: 1400px;
-            margin: 0 auto 2rem;
-            padding: 0 1rem;
-        }
-        .day-columns {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.5rem;
-        }
-        .day-column {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            min-height: 600px;
-        }
-        .day-header {
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            font-weight: 600;
-        }
-        .day-header.today { background: rgba(26,92,76,0.1); color: var(--primary); }
-        .day-header .date { font-size: 0.8rem; color: #666; }
-        .day-slots { padding: 0.5rem; }
-        .time-slot {
-            padding: 0.5rem;
             border-radius: 8px;
-            margin-bottom: 0.25rem;
-            font-size: 0.8rem;
-            min-height: 30px;
             cursor: pointer;
-            transition: background 0.2s;
+            font-weight: 500;
         }
-        .time-slot:hover { background: #f5f5f5; }
-        .time-slot .time { color: #999; font-size: 0.7rem; }
-        .time-slot .name { font-weight: 500; }
-        .time-slot .service { color: #666; font-size: 0.75rem; }
-
-        .apt-block {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            padding: 0.5rem;
-            border-radius: 8px;
-            margin-bottom: 0.25rem;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .apt-block:hover { transform: scale(1.02); }
-        .apt-block .time { opacity: 0.8; font-size: 0.7rem; }
-        .apt-block .name { font-weight: 600; }
-        .apt-block .service { opacity: 0.9; font-size: 0.75rem; }
+        .btn-confirm-move { background: #1a6b5c; color: white; }
+        .btn-confirm-move:hover { background: #0f4a3f; }
+        .btn-confirm-cancel { background: #e9ecef; color: #666; }
+        .btn-confirm-cancel:hover { background: #dee2e6; }
 
         .toast {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--primary);
+            bottom: 30px;
+            right: 30px;
+            background: #1a6b5c;
             color: white;
-            padding: 1rem 2rem;
+            padding: 15px 25px;
             border-radius: 10px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s;
-            z-index: 1000;
+            z-index: 2000;
         }
         .toast.show { transform: translateY(0); opacity: 1; }
-
-        @media (max-width: 1024px) {
-            .day-columns { grid-template-columns: repeat(3, 1fr); }
+        .toast-with-undo { display: flex; align-items: center; gap: 15px; }
+        .toast-undo-btn {
+            background: white;
+            color: #1a6b5c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
         }
-        @media (max-width: 768px) {
-            .day-columns { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
+        .toast-undo-btn:hover { background: #e8f5f2; }
+
+        @media (max-width: 900px) {
+            .raster-grid { grid-template-columns: repeat(5, 1fr); }
+            .day-slots { height: auto; max-height: 70vh; }
+            .slot-cell { min-height: 40px; font-size: 0.65rem; }
+            .slot-time { font-size: 0.6rem; min-width: 28px; }
+            .appointment-card { font-size: 0.6rem; padding: 3px; }
+            .stats-bar { display: none; }
+        }
+
+        @media print {
+            .top-nav, .toolbar, .legend, .add-slot-btn { display: none; }
+            .raster-container { box-shadow: none; }
+            .raster-grid { height: auto; }
         }
     </style>
 </head>
 <body>
     <!-- Login Overlay -->
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-box">
-            <div class="icon">🔒</div>
-            <h2>Zugang zum Wochenplan</h2>
-            <div id="roleSection">
-                <p>Bitte Account auswählen</p>
-                <button class="role-btn dr" onclick="selectRole('Dr. Erkens')">
-                    <span>👨‍⚕️</span> Dr. Erkens
+    <div id="loginOverlay" style="position:fixed; inset:0; background:#f5f7fa; z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div style="background:white; padding:40px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; width:380px;">
+            <div style="font-size:2.5rem; margin-bottom:10px;">🔒</div>
+            <h2 style="margin-bottom:8px; color:#1a1a2e;">Zugang zum Wochenplan</h2>
+            <p id="loginStep1Label" style="color:#666; margin-bottom:20px; font-size:0.9rem;">Bitte Account auswählen</p>
+            <div id="roleButtons" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                <button onclick="selectRole('Dr. Erkens')" style="width:100%; padding:14px; background:#1a6b5c; color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.4rem;">👩‍⚕️</span> Dr. Erkens
                 </button>
-                <button class="role-btn praxis" onclick="selectRole('Praxis')">
-                    <span>🏥</span> Praxis
+                <button onclick="selectRole('Praxis')" style="width:100%; padding:14px; background:#2d6a9f; color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.4rem;">🏥</span> Praxis
                 </button>
-                <button class="role-btn assistenz" onclick="selectRole('Assistenz')">
-                    <span>🦷</span> Assistenz
+                <button onclick="selectRole('Assistenz')" style="width:100%; padding:14px; background:#8b5cf6; color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; text-align:left; display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.4rem;">🦷</span> Assistenz
                 </button>
             </div>
-            <div class="pin-section" id="pinSection">
-                <h3 id="selectedRoleLabel"></h3>
-                <input type="password" class="pin-input" id="pinInput" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter') checkPin()">
-                <button class="btn btn-primary" style="width:100%; padding:1rem; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; background:var(--primary); color:white;" onclick="checkPin()">Einloggen</button>
-                <button class="btn-back" onclick="backToRoles()">← Zurück</button>
-                <p class="pin-error" id="pinError">Falscher Code</p>
+            <div id="pinSection" style="display:none;">
+                <p style="color:#666; margin-bottom:12px; font-size:0.9rem;">Code für <strong id="selectedRoleName"></strong></p>
+                <div style="margin-bottom:20px;">
+                    <input id="pinInput" type="password" maxlength="4" placeholder="••••" style="width:100%; padding:14px; font-size:1.5rem; text-align:center; border:2px solid #ddd; border-radius:10px; letter-spacing:12px; outline:none;" onkeydown="if(event.key==='Enter') checkPin()">
+                </div>
+                <button onclick="checkPin()" style="width:100%; padding:14px; background:#1a6b5c; color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer;">Einloggen</button>
+                <button onclick="backToRoles()" style="width:100%; padding:10px; background:none; color:#666; border:none; font-size:0.85rem; cursor:pointer; margin-top:8px;">← Zurück</button>
             </div>
+            <p id="loginError" style="color:#dc3545; font-size:0.85rem; display:none; margin-top:12px;">Falscher Code</p>
         </div>
     </div>
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="logo">Dr. Erkens</a>
-            <ul class="nav-links">
-                <li><a href="/">Startseite</a></li>
-                <li><a href="/wochenplan.html" class="active">Wochenplan</a></li>
-                <li><a href="/login.html">Patienten-Login</a></li>
-                <li><a href="/admin.html" id="adminLink" style="display:none;">Admin</a></li>
-            </ul>
+    <nav class="top-nav">
+        <h2 id="navUserName" style="cursor: pointer;" onclick="showAdminLogin()" title="Admin Panel">Wochenplan</h2>
+        <div class="top-nav-links">
+            <a href="wochenplan.html" class="active">Wochenplan</a>
         </div>
     </nav>
 
-    <div class="week-nav">
-        <button onclick="prevWeek()">←</button>
-        <h3 id="weekRange"></h3>
-        <button onclick="nextWeek()">→</button>
+    <div class="toolbar">
+        <div class="date-nav">
+            <button onclick="prevWeek()">&#8592;</button>
+            <span id="weekRange"></span>
+            <button onclick="nextWeek()">&#8594;</button>
+        </div>
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="stat-total">0</div>
+                <div class="stat-label">Termine</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-confirmed">0</div>
+                <div class="stat-label">Bestätigt</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-open">0</div>
+                <div class="stat-label">Offen</div>
+            </div>
+        </div>
     </div>
 
-    <div class="calendar">
-        <div class="day-columns" id="dayColumns"></div>
+    <div class="raster-wrapper">
+        <div class="raster-container">
+            <div class="raster-grid" id="rasterGrid"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color confirmed"></div>
+                    <span>Bestätigt</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color pending"></div>
+                    <span>Offen</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color empty"></div>
+                    <span>Verfügbar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal: Termin ansehen + bestätigen/bearbeiten -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <h2 id="detailModalTitle">Termin-Details</h2>
+            <div id="detailView">
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Patient</span>
+                    <span class="modal-detail-value" id="detailName"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">E-Mail</span>
+                    <span class="modal-detail-value" id="detailEmail"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Telefon</span>
+                    <span class="modal-detail-value" id="detailPhone"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Versicherung</span>
+                    <span class="modal-detail-value" id="detailInsurance"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Leistung</span>
+                    <span class="modal-detail-value" id="detailService"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Datum</span>
+                    <span class="modal-detail-value" id="detailDate"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Uhrzeit</span>
+                    <span class="modal-detail-value" id="detailTime"></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Status</span>
+                    <span class="modal-detail-value" id="detailStatus"></span>
+                </div>
+                <div class="modal-detail-row" id="detailMessageRow" style="display:none;">
+                    <span class="modal-detail-label">Nachricht</span>
+                    <span class="modal-detail-value" id="detailMessage" style="max-width: 250px; text-align: right; white-space: pre-wrap;"></span>
+                </div>
+            </div>
+
+            <!-- Edit-Form (versteckt) -->
+            <form class="modal-form" id="editForm" style="display:none;">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>E-Mail *</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="editPhone">
+                </div>
+                <div class="form-group">
+                    <label>Leistung</label>
+                    <select id="editService">
+                        <option value="Diagnostik">Diagnostik</option>
+                        <option value="Therapie">Therapie</option>
+                        <option value="Manuelle Therapie">Manuelle Therapie</option>
+                        <option value="Krankengymnastik">Krankengymnastik</option>
+                        <option value="Sportphysiotherapie">Sportphysiotherapie</option>
+                        <option value="Bobath-Therapie">Bobath-Therapie</option>
+                        <option value="Erstuntersuchung">Erstuntersuchung</option>
+                        <option value="Kontrolluntersuchung">Kontrolluntersuchung</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Versicherung</label>
+                    <select id="editInsurance">
+                        <option value="gesetzlich">Gesetzlich versichert</option>
+                        <option value="privat">Privat versichert</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editStatus">
+                        <option value="offen">Offen</option>
+                        <option value="bestaetigt">Bestätigt</option>
+                        <option value="abgesagt">Abgesagt</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="modal-actions" id="detailActions">
+                <button class="btn-confirm" id="btnConfirm" onclick="confirmAppointment()">Annehmen</button>
+                <button class="btn-delete" id="btnDecline" onclick="declineAppointment()">Absagen</button>
+                <button class="btn-save" id="btnEdit" onclick="toggleEdit()">Bearbeiten</button>
+                <button class="btn-cancel" id="btnCloseDetail" onclick="closeDetailModal()">Schließen</button>
+            </div>
+            <div class="modal-actions" id="editActions" style="display:none;">
+                <button class="btn-save" onclick="saveEdit()">Speichern</button>
+                <button class="btn-cancel" onclick="toggleEdit()">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bestätigungs-Modal für Drag & Drop -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-content">
+            <div class="confirm-icon">&#128203;</div>
+            <h3>Termin verschieben?</h3>
+            <div class="confirm-details">
+                <p><strong>Patient:</strong> <span id="confirmName"></span></p>
+                <p><strong>Von:</strong> <span class="old" id="confirmOld"></span></p>
+                <p><strong>Nach:</strong> <span class="new" id="confirmNew"></span></p>
+            </div>
+            <div class="email-notice">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <span>E-Mail-Benachrichtigung wird gesendet</span>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" onclick="closeConfirmModal()">Abbrechen</button>
+                <button class="btn-confirm-move" onclick="confirmMove()">Verschieben</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Neuer Termin Modal -->
+    <div class="modal" id="newModal">
+        <div class="modal-content">
+            <h2>Neuer Termin</h2>
+            <form class="modal-form" id="newForm">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" id="newName" required>
+                </div>
+                <div class="form-group">
+                    <label>E-Mail *</label>
+                    <input type="email" id="newEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="newPhone">
+                </div>
+                <div class="form-group">
+                    <label>Leistung</label>
+                    <select id="newService">
+                        <option value="Diagnostik">Diagnostik</option>
+                        <option value="Therapie">Therapie</option>
+                        <option value="Manuelle Therapie">Manuelle Therapie</option>
+                        <option value="Krankengymnastik">Krankengymnastik</option>
+                        <option value="Sportphysiotherapie">Sportphysiotherapie</option>
+                        <option value="Bobath-Therapie">Bobath-Therapie</option>
+                        <option value="Erstuntersuchung">Erstuntersuchung</option>
+                        <option value="Kontrolluntersuchung">Kontrolluntersuchung</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Versicherung</label>
+                    <select id="newInsurance">
+                        <option value="gesetzlich">Gesetzlich versichert</option>
+                        <option value="privat">Privat versichert</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Anmerkung</label>
+                    <input type="text" id="newMessage" placeholder="Optional">
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeNewModal()">Abbrechen</button>
+                <button class="btn-save" onclick="saveNew()">Erstellen</button>
+            </div>
+        </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
+        // Login Check
+        (function() {
+            const sid = sessionStorage.getItem('wochenplan_session');
+            if (sid) {
+                fetch('/api/wochenplan/verify', { headers: { 'Authorization': 'Bearer ' + sid } })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            document.getElementById('loginOverlay').style.display = 'none';
+                            document.getElementById('navUserName').textContent = d.role;
+                            if (d.role === 'Dr. Erkens') {
+                                document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                            }
+                        }
+                    });
+                return;
+            }
+            document.getElementById('loginOverlay').style.display = 'flex';
+        })();
         let selectedRole = '';
-        let currentWeekStart = getWeekStart(new Date());
-        let appointments = [];
 
-        const timeSlots = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'];
-        const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
+        function selectRole(role) {
+            selectedRole = role;
+            document.getElementById('roleButtons').style.display = 'none';
+            document.getElementById('pinSection').style.display = 'block';
+            document.getElementById('selectedRoleName').textContent = role;
+            document.getElementById('loginStep1Label').textContent = 'Code eingeben';
+            document.getElementById('pinInput').focus();
+        }
+
+        function backToRoles() {
+            selectedRole = '';
+            document.getElementById('roleButtons').style.display = 'flex';
+            document.getElementById('pinSection').style.display = 'none';
+            document.getElementById('loginStep1Label').textContent = 'Bitte Account auswählen';
+            document.getElementById('pinInput').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function checkPin() {
+            const pin = document.getElementById('pinInput').value;
+            if (!pin) return;
+            fetch('/api/wochenplan/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin, role: selectedRole })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('wochenplan_session', data.sessionId);
+                    sessionStorage.setItem('wochenplan_role', data.role);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('navUserName').textContent = data.role;
+                    if (data.role === 'Dr. Erkens') {
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                    }
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                    document.getElementById('pinInput').value = '';
+                }
+            }).catch(() => {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('pinInput').value = '';
+            });
+        }
+
+        let appointments = [];
+        let currentWeekStart = getWeekStart(new Date());
+        let draggedAppointment = null;
+        let pendingMove = null;
+        let lastMove = null;
+        let undoTimeout = null;
+        let currentDetailApt = null;
+
+        const timeSlots = [
+            '08:00','08:30','09:00','09:30','10:00','10:30',
+            '11:00','11:30','13:00','13:30','14:00','14:30',
+            '15:00','15:30','16:00','16:30','17:00','17:30'
+        ];
+
+        const serviceIcons = {
+            'Diagnostik': '&#128269;',
+            'Therapie': '&#129657;',
+            'Manuelle Therapie': '&#129308;',
+            'Krankengymnastik': '&#128170;',
+            'Sportphysiotherapie': '&#127947;',
+            'Bobath-Therapie': '&#129504;',
+            'Erstuntersuchung': '&#128269;',
+            'Kontrolluntersuchung': '&#9989;'
+        };
 
         function getWeekStart(date) {
             const d = new Date(date);
@@ -288,121 +850,397 @@
         }
 
         function formatDateISO(date) { return date.toISOString().split('T')[0]; }
-        function formatDate(date) { return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
-
-        // Login
-        function selectRole(role) {
-            selectedRole = role;
-            document.getElementById('roleSection').style.display = 'none';
-            document.getElementById('pinSection').classList.add('active');
-            document.getElementById('selectedRoleLabel').textContent = 'Code für ' + role;
-            document.getElementById('pinInput').focus();
-        }
-
-        function backToRoles() {
-            document.getElementById('roleSection').style.display = 'block';
-            document.getElementById('pinSection').classList.remove('active');
-            document.getElementById('pinInput').value = '';
-            document.getElementById('pinError').style.display = 'none';
-        }
-
-        async function checkPin() {
-            const pin = document.getElementById('pinInput').value;
-            if (!pin) return;
-
-            try {
-                const res = await fetch('/api/wochenplan/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pin, role: selectedRole })
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    sessionStorage.setItem('wochenplan_session', data.sessionId);
-                    sessionStorage.setItem('wochenplan_role', data.role);
-                    document.getElementById('loginOverlay').classList.add('hidden');
-                    if (data.role === 'Dr. Erkens') {
-                        document.getElementById('adminLink').style.display = 'inline';
-                    }
-                    loadAppointments();
-                } else {
-                    document.getElementById('pinError').style.display = 'block';
-                    document.getElementById('pinInput').value = '';
-                }
-            } catch (e) {
-                document.getElementById('pinError').style.display = 'block';
-            }
-        }
-
-        // Verify session
-        async function verifySession() {
-            const sid = sessionStorage.getItem('wochenplan_session');
-            if (!sid) return;
-
-            try {
-                const res = await fetch('/api/wochenplan/verify', {
-                    headers: { 'Authorization': 'Bearer ' + sid }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    document.getElementById('loginOverlay').classList.add('hidden');
-                    if (data.role === 'Dr. Erkens') {
-                        document.getElementById('adminLink').style.display = 'inline';
-                    }
-                    loadAppointments();
-                }
-            } catch (e) { console.error(e); }
-        }
-
-        // Calendar
-        function renderCalendar() {
-            const start = new Date(currentWeekStart);
-            document.getElementById('weekRange').textContent =
-                formatDate(start) + ' – ' + formatDate(new Date(start.getTime() + 4 * 86400000));
-
-            const grid = document.getElementById('dayColumns');
-            grid.innerHTML = '';
-
-            for (let i = 0; i < 5; i++) {
-                const date = new Date(currentWeekStart);
-                date.setDate(date.getDate() + i);
-                const dateStr = formatDateISO(date);
-                const isToday = date.toDateString() === new Date().toDateString();
-
-                const col = document.createElement('div');
-                col.className = 'day-column';
-                col.innerHTML = `
-                    <div class="day-header ${isToday ? 'today' : ''}">
-                        ${dayNames[i]}<br>
-                        <span class="date">${date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}</span>
-                    </div>
-                    <div class="day-slots">
-                        ${timeSlots.map(t => {
-                            const apt = appointments.find(a => a.date === dateStr && a.time === t);
-                            return apt
-                                ? `<div class="apt-block"><div class="time">${apt.time}</div><div class="name">${apt.name}</div><div class="service">${apt.service}</div></div>`
-                                : `<div class="time-slot"><span class="time">${t}</span></div>`;
-                        }).join('')}
-                    </div>
-                `;
-                grid.appendChild(col);
-            }
-        }
+        function formatDate(date) { return date.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+        function formatDateLong(dateStr) { return new Date(dateStr).toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'}); }
+        function getDayName(date) { return date.toLocaleDateString('de-DE',{weekday:'short'}); }
 
         async function loadAppointments() {
             try {
                 const res = await fetch('/api/appointments');
-                appointments = await res.json();
-                renderCalendar();
-            } catch (e) { console.error(e); }
+                const all = await res.json();
+                const role = sessionStorage.getItem('wochenplan_role');
+                if (role === 'Assistenz') {
+                    appointments = all.filter(a => a.assigned_to === 'Assistenz');
+                } else {
+                    appointments = all;
+                }
+                renderRaster();
+            } catch(e) { console.error('Fehler:', e); }
         }
 
-        function prevWeek() { currentWeekStart.setDate(currentWeekStart.getDate() - 7); renderCalendar(); }
-        function nextWeek() { currentWeekStart.setDate(currentWeekStart.getDate() + 7); renderCalendar(); }
+        function renderRaster() {
+            const grid = document.getElementById('rasterGrid');
+            grid.innerHTML = '';
+            const today = new Date(); today.setHours(0,0,0,0);
+            let weekAppts = [];
 
-        // Init
-        verifySession();
+            // Day columns
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = formatDateISO(date);
+                const isToday = date.getTime() === today.getTime();
+                const dayOfWeek = date.getDay();
+                const isFriday = dayOfWeek === 5;
+
+                const col = document.createElement('div');
+                col.className = 'day-column';
+
+                const header = document.createElement('div');
+                header.className = `day-header ${isToday ? 'today' : ''}`;
+                header.innerHTML = `<div class="day-header-name">${getDayName(date)}</div><div class="day-header-date">${formatDate(date)}</div>`;
+                col.appendChild(header);
+
+                const slots = document.createElement('div');
+                slots.className = 'day-slots';
+
+                timeSlots.forEach(time => {
+                    if (isFriday && time > '14:00') return;
+
+                    const slotAppts = appointments.filter(a => a.date === dateStr && a.time === time && a.status !== 'abgesagt');
+                    weekAppts = weekAppts.concat(slotAppts);
+
+                    const cell = document.createElement('div');
+                    cell.className = 'slot-cell';
+                    cell.dataset.date = dateStr;
+                    cell.dataset.time = time;
+
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('dragleave', handleDragLeave);
+                    cell.addEventListener('drop', handleDrop);
+
+                    if (slotAppts.length > 0) {
+                        const apt = slotAppts[0];
+                        const card = document.createElement('div');
+                        card.className = `appointment-card ${apt.status === 'bestaetigt' ? 'confirmed' : 'pending'}`;
+                        card.draggable = true;
+                        card.dataset.id = apt.id;
+                        const actionsHtml = apt.status === 'offen'
+                            ? `<div class="card-actions"><button class="btn-card-confirm" onclick="event.stopPropagation(); quickConfirm('${apt.id}')">OK</button><button class="btn-card-cancel" onclick="event.stopPropagation(); quickCancel('${apt.id}')">X</button></div>`
+                            : `<div class="card-actions"><button class="btn-card-cancel" onclick="event.stopPropagation(); quickCancel('${apt.id}')">X</button></div>`;
+                        const insuranceLabel = apt.insurance === 'privat' ? 'Privat' : 'Gesetzl.';
+                        card.innerHTML = `
+                            <div class="appointment-info">${apt.service || ''} · ${insuranceLabel}</div>
+                            <div class="appointment-name">${apt.name}</div>
+                            ${actionsHtml}
+                        `;
+                        cell.innerHTML = `<span class="slot-time">${time}</span>`;
+                        cell.appendChild(card);
+                        card.addEventListener('dragstart', handleDragStart);
+                        card.addEventListener('dragend', handleDragEnd);
+                        card.addEventListener('click', (e) => { e.stopPropagation(); openDetailModal(apt); });
+                    } else {
+                        cell.innerHTML = `<span class="slot-time">${time}</span>`;
+                        const addBtn = document.createElement('button');
+                        addBtn.className = 'add-slot-btn';
+                        addBtn.innerHTML = '+';
+                        addBtn.addEventListener('click', (e) => { e.stopPropagation(); openNewModal(dateStr, time); });
+                        cell.appendChild(addBtn);
+                        cell.addEventListener('click', () => openNewModal(dateStr, time));
+                    }
+
+                    slots.appendChild(cell);
+                });
+
+                col.appendChild(slots);
+                grid.appendChild(col);
+            }
+
+            // Stats
+            document.getElementById('stat-total').textContent = weekAppts.length;
+            document.getElementById('stat-confirmed').textContent = weekAppts.filter(a => a.status === 'bestaetigt').length;
+            document.getElementById('stat-open').textContent = weekAppts.filter(a => a.status === 'offen').length;
+
+            // Week range
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 4);
+            document.getElementById('weekRange').textContent = `${formatDate(currentWeekStart)} - ${formatDate(weekEnd)}`;
+        }
+
+        // --- Drag & Drop ---
+        function handleDragStart(e) {
+            draggedAppointment = e.target.dataset.id;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedAppointment = null;
+            document.querySelectorAll('.slot-cell').forEach(c => c.classList.remove('drag-over'));
+        }
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+        function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            if (!draggedAppointment) return;
+            const apt = appointments.find(a => a.id === draggedAppointment);
+            if (!apt) return;
+            const newDate = e.currentTarget.dataset.date;
+            const newTime = e.currentTarget.dataset.time;
+            if (newDate === apt.date && newTime === apt.time) return;
+
+            pendingMove = { id: draggedAppointment, oldDate: apt.date, oldTime: apt.time, newDate, newTime, name: apt.name };
+            document.getElementById('confirmName').textContent = apt.name;
+            document.getElementById('confirmOld').textContent = `${formatDateLong(apt.date)} um ${apt.time} Uhr`;
+            document.getElementById('confirmNew').textContent = `${formatDateLong(newDate)} um ${newTime} Uhr`;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+        function closeConfirmModal() { document.getElementById('confirmModal').classList.remove('active'); pendingMove = null; }
+        async function confirmMove() {
+            if (!pendingMove) return;
+            const { id, oldDate, oldTime, newDate, newTime } = pendingMove;
+            try {
+                const res = await fetch(`/api/appointments/${id}/move`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ newDate, newTime })
+                });
+                if (res.ok) {
+                    lastMove = { id, oldDate, oldTime, newDate, newTime };
+                    closeConfirmModal();
+                    loadAppointments();
+                    showUndoToast('Termin verschoben! E-Mail wurde gesendet.');
+                } else {
+                    const err = await res.json();
+                    showToast(err.error || 'Fehler');
+                }
+            } catch(e) { showToast('Fehler beim Verschieben'); }
+        }
+        async function quickConfirm(id) {
+            try {
+                await fetch(`/api/appointments/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ status: 'bestaetigt' })
+                });
+                showToast('Termin bestätigt!');
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+        async function quickCancel(id) {
+            if (!confirm('Termin wirklich absagen? Patient erhält eine E-Mail.')) return;
+            try {
+                await fetch(`/api/appointments/${id}/decline`, {
+                    method: 'PUT',
+                    headers: {'Content-Type':'application/json'}
+                });
+                showToast('Termin abgesagt. Patient wurde informiert.');
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+        async function undoMove() {
+            if (!lastMove) return;
+            const { id, oldDate, oldTime } = lastMove;
+            try {
+                await fetch(`/api/appointments/${id}/move`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ newDate: oldDate, newTime: oldTime })
+                });
+                lastMove = null;
+                clearTimeout(undoTimeout);
+                loadAppointments();
+                showToast('Rückgängig gemacht!');
+            } catch(e) {}
+        }
+        function showUndoToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerHTML = `<div class="toast-with-undo"><span>${msg}</span><button class="toast-undo-btn" onclick="undoMove()">Rückgängig</button></div>`;
+            t.classList.add('show');
+            undoTimeout = setTimeout(() => { t.classList.remove('show'); lastMove = null; }, 8000);
+        }
+
+        // --- Detail Modal (Termin ansehen / bestätigen) ---
+        function openDetailModal(apt) {
+            currentDetailApt = apt;
+            document.getElementById('detailName').textContent = apt.name;
+            document.getElementById('detailEmail').textContent = apt.email;
+            document.getElementById('detailPhone').textContent = apt.phone || '-';
+            document.getElementById('detailInsurance').textContent = apt.insurance === 'privat' ? 'Privat versichert' : 'Gesetzlich versichert';
+            document.getElementById('detailService').textContent = apt.service || '-';
+            document.getElementById('detailDate').textContent = formatDateLong(apt.date);
+            document.getElementById('detailTime').textContent = apt.time + ' Uhr';
+            const statusMap = { bestaetigt: '✓ Bestätigt', offen: '⏳ Offen', abgesagt: '✗ Abgesagt' };
+            document.getElementById('detailStatus').textContent = statusMap[apt.status] || apt.status;
+            if (apt.message) {
+                document.getElementById('detailMessageRow').style.display = 'flex';
+                document.getElementById('detailMessage').textContent = apt.message;
+            } else {
+                document.getElementById('detailMessageRow').style.display = 'none';
+            }
+
+            // Buttons je nach Status
+            document.getElementById('btnConfirm').style.display = apt.status === 'offen' ? 'block' : 'none';
+            document.getElementById('btnDecline').style.display = apt.status === 'offen' ? 'block' : 'none';
+
+            // Detail-View anzeigen, Edit-Form verstecken
+            document.getElementById('detailView').style.display = 'block';
+            document.getElementById('detailActions').style.display = 'flex';
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('editActions').style.display = 'none';
+            document.getElementById('detailModalTitle').textContent = 'Termin-Details';
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+            currentDetailApt = null;
+        }
+
+        async function confirmAppointment() {
+            if (!currentDetailApt) return;
+            try {
+                await fetch(`/api/appointments/${currentDetailApt.id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ status: 'bestaetigt' })
+                });
+                showToast('Termin angenommen!');
+                closeDetailModal();
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+
+        async function declineAppointment() {
+            if (!currentDetailApt) return;
+            if (!confirm('Termin wirklich absagen? Patient erhält eine E-Mail.')) return;
+            try {
+                await fetch(`/api/appointments/${currentDetailApt.id}/decline`, {
+                    method: 'PUT',
+                    headers: {'Content-Type':'application/json'}
+                });
+                showToast('Termin abgesagt. Patient wurde per E-Mail informiert.');
+                closeDetailModal();
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+
+        function toggleEdit() {
+            const apt = currentDetailApt;
+            if (!apt) return;
+            const isEditing = document.getElementById('editForm').style.display === 'block';
+
+            if (isEditing) {
+                // Zurück zu Detail
+                document.getElementById('detailView').style.display = 'block';
+                document.getElementById('detailActions').style.display = 'flex';
+                document.getElementById('editForm').style.display = 'none';
+                document.getElementById('editActions').style.display = 'none';
+                document.getElementById('detailModalTitle').textContent = 'Termin-Details';
+            } else {
+                // Edit-Modus
+                document.getElementById('editId').value = apt.id;
+                document.getElementById('editName').value = apt.name;
+                document.getElementById('editEmail').value = apt.email;
+                document.getElementById('editPhone').value = apt.phone || '';
+                document.getElementById('editService').value = apt.service || 'Prophylaxe';
+                document.getElementById('editInsurance').value = apt.insurance || 'gesetzlich';
+                document.getElementById('editStatus').value = apt.status;
+
+                document.getElementById('detailView').style.display = 'none';
+                document.getElementById('detailActions').style.display = 'none';
+                document.getElementById('editForm').style.display = 'block';
+                document.getElementById('editActions').style.display = 'flex';
+                document.getElementById('detailModalTitle').textContent = 'Termin bearbeiten';
+            }
+        }
+
+        async function saveEdit() {
+            const id = document.getElementById('editId').value;
+            const data = {
+                name: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                service: document.getElementById('editService').value,
+                insurance: document.getElementById('editInsurance').value,
+                status: document.getElementById('editStatus').value
+            };
+            try {
+                await fetch(`/api/appointments/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(data)
+                });
+                showToast('Termin aktualisiert!');
+                closeDetailModal();
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+
+        async function deleteAppointment() {
+            if (!currentDetailApt) return;
+            if (!confirm('Termin wirklich löschen?')) return;
+            try {
+                await fetch(`/api/appointments/${currentDetailApt.id}`, { method: 'DELETE' });
+                showToast('Termin gelöscht!');
+                closeDetailModal();
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+
+        // --- Neuer Termin Modal ---
+        let newModalDate = '', newModalTime = '';
+        function openNewModal(date, time) {
+            newModalDate = date;
+            newModalTime = time;
+            document.getElementById('newName').value = '';
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newPhone').value = '';
+            document.getElementById('newService').value = 'Prophylaxe';
+            document.getElementById('newInsurance').value = 'gesetzlich';
+            document.getElementById('newMessage').value = '';
+            document.getElementById('newModal').classList.add('active');
+        }
+        function closeNewModal() { document.getElementById('newModal').classList.remove('active'); }
+        async function saveNew() {
+            const name = document.getElementById('newName').value.trim();
+            const email = document.getElementById('newEmail').value.trim();
+            if (!name || !email) { alert('Name und E-Mail sind Pflichtfelder.'); return; }
+            const data = {
+                name, email,
+                phone: document.getElementById('newPhone').value,
+                service: document.getElementById('newService').value,
+                insurance: document.getElementById('newInsurance').value,
+                message: document.getElementById('newMessage').value,
+                date: newModalDate,
+                time: newModalTime
+            };
+            try {
+                await fetch('/api/appointments', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(data)
+                });
+                showToast('Termin erstellt!');
+                closeNewModal();
+                loadAppointments();
+            } catch(e) { showToast('Fehler'); }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerHTML = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- Navigation ---
+        function prevWeek() { currentWeekStart.setDate(currentWeekStart.getDate() - 7); renderRaster(); }
+        function nextWeek() { currentWeekStart.setDate(currentWeekStart.getDate() + 7); renderRaster(); }
+
+        // --- Admin Login Modal ---
+        function showAdminLogin() {
+            const role = sessionStorage.getItem('wochenplan_role');
+            if (role === 'Dr. Erkens') {
+                window.location.href = 'admin.html';
+            } else {
+                showToast('Kein Zugriff auf Admin-Panel');
+            }
+        }
+
+        loadAppointments();
     </script>
 </body>
 </html>

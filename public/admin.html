@@ -4,356 +4,431 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Dr. Erkens</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #1a5c4c;
-            --primary-light: #2d8a6e;
-            --accent: #c9a962;
-            --text: #1a1a2e;
-            --bg: #fafaf8;
-            --white: #ffffff;
-            --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --radius: 16px;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
-        }
-        .navbar {
-            background: var(--primary);
-            color: var(--white);
-            padding: 1rem 2rem;
-        }
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--white);
-            text-decoration: none;
-        }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem; }
-        .nav-links a:hover, .nav-links a.active { color: var(--white); }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fa; color: #1a1a2e; min-height: 100vh; }
 
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .header h1 { font-size: 2rem; color: var(--primary); }
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        .tab {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            background: var(--white);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: var(--shadow);
-        }
-        .tab.active {
-            background: var(--primary);
-            color: var(--white);
-        }
+        /* Top Nav */
+        .top-nav { background: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
+        .top-nav h2 { font-size: 1.1rem; font-weight: 600; color: #1a6b5c; cursor: pointer; }
+        .top-nav h2:hover { opacity: 0.8; }
+        .top-nav-links { display: flex; gap: 8px; }
+        .top-nav-links a { padding: 8px 16px; border-radius: 8px; text-decoration: none; color: #555; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+        .top-nav-links a:hover { background: #f0f0f0; }
+        .top-nav-links a.active { background: #1a6b5c; color: white; }
+        .user-badge { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #555; }
+        .user-badge span { background: #1a6b5c; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
 
-        .panel { display: none; }
-        .panel.active { display: block; }
+        /* Login Overlay */
+        .login-overlay { position: fixed; inset: 0; background: #f5f7fa; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; width: 400px; }
+        .login-card .lock-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .login-card h2 { margin-bottom: 8px; color: #1a1a2e; font-size: 1.3rem; }
+        .login-card p { color: #666; margin-bottom: 20px; font-size: 0.9rem; }
+        .login-card .form-group { margin-bottom: 16px; text-align: left; }
+        .login-card label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.85rem; color: #555; }
+        .login-card input { width: 100%; padding: 12px 16px; border: 2px solid #e9ecef; border-radius: 10px; font-size: 1rem; }
+        .login-card input:focus { outline: none; border-color: #1a6b5c; }
+        .login-btn { width: 100%; padding: 14px; background: #1a6b5c; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .login-btn:hover { background: #0f4a3f; }
+        .login-error { color: #dc3545; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .back-link { margin-top: 16px; }
+        .back-link a { color: #666; text-decoration: none; font-size: 0.85rem; }
 
-        .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }
-        .card h2 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-        }
+        /* Dashboard */
+        .dashboard { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .dashboard-header { margin-bottom: 24px; }
+        .dashboard-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .stat-card {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-        .stat-card h3 { font-size: 0.8rem; color: #666; font-weight: 500; margin-bottom: 0.5rem; }
-        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        /* Tabs */
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border: none; background: white; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: #555; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .tab-btn:hover { background: #e8f5f2; color: #1a6b5c; }
+        .tab-btn.active { background: #1a6b5c; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9rem;
-        }
-        th { font-weight: 600; color: #666; font-size: 0.8rem; text-transform: uppercase; }
-        tr:hover { background: #f9f9f9; }
+        /* Cards */
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 24px; margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-header h3 { font-size: 1.1rem; font-weight: 600; }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-danger { background: #dc3545; color: var(--white); }
-        .btn-success { background: #28a745; color: var(--white); }
-        .btn-outline { background: none; border: 1px solid #ddd; color: var(--text); }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.85rem; color: #555; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #1a6b5c; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-        .badge {
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        .badge-offen { background: #fff3cd; color: #856404; }
-        .badge-bestätigt { background: #d4edda; color: #155724; }
-        .badge-abgesagt { background: #f8d7da; color: #721c24; }
-        .badge-genehmigt { background: #d4edda; color: #155724; }
-        .badge-abgelehnt { background: #f8d7da; color: #721c24; }
+        /* Buttons */
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #1a6b5c; color: white; }
+        .btn-primary:hover { background: #0f4a3f; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-secondary { background: #e9ecef; color: #555; }
+        .btn-secondary:hover { background: #dee2e6; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e5e5;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-family: inherit;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
+        /* Table */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover { background: #f8f9fa; }
 
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-        }
-        .day-card {
-            background: var(--bg);
-            padding: 1rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .day-card h4 { font-size: 0.85rem; margin-bottom: 0.5rem; }
-        .day-card input[type="checkbox"] { margin-bottom: 0.5rem; }
-        .day-card input[type="time"] {
-            width: 100%;
-            padding: 0.4rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 0.8rem;
-        }
-
-        .vacation-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--bg);
-            border-radius: 10px;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
-        .modal-content {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: var(--radius);
-            width: 100%;
-            max-width: 400px;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            justify-content: flex-end;
-        }
+        .modal-content { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .modal-content h2 { margin-bottom: 20px; font-size: 1.3rem; }
 
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--primary);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
+        /* Stats */
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-align: center; }
+        .stat-card .stat-number { font-size: 2rem; font-weight: 700; color: #1a6b5c; }
+        .stat-card .stat-label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1a6b5c; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 2000; }
         .toast.show { transform: translateY(0); opacity: 1; }
 
+        /* Day Checkboxes */
+        .day-checkboxes { display: flex; gap: 8px; flex-wrap: wrap; }
+        .day-checkbox { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px 14px; background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; transition: all 0.2s; }
+        .day-checkbox:hover { border-color: #1a6b5c; }
+        .day-checkbox input { display: none; }
+        .day-checkbox input:checked + span { color: #1a6b5c; font-weight: 600; }
+        .day-checkbox:has(input:checked) { background: #e8f5f2; border-color: #1a6b5c; }
+        .day-checkbox span { font-size: 0.9rem; font-weight: 500; }
+
         @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .schedule-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-row { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
+            .tabs { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="logo">Dr. Erkens</a>
-            <ul class="nav-links">
-                <li><a href="/wochenplan.html">Wochenplan</a></li>
-                <li><a href="#" class="active">Admin</a></li>
-            </ul>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="lock-icon">🔒</div>
+            <h2>Admin Zugang</h2>
+            <p>Nur für autorisierte Mitarbeiter</p>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>E-Mail</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@drerkens.de">
+                </div>
+                <div class="form-group">
+                    <label>Passwort</label>
+                    <input type="password" id="adminPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="login-btn">Einloggen</button>
+                <div class="login-error" id="loginError"></div>
+            </form>
+            <div class="back-link">
+                <a href="index.html">← Zurück zur Startseite</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="top-nav">
+        <h2 id="navUserName" style="cursor: pointer;" title="Admin Panel">Dr. Erkens</h2>
+        <div class="top-nav-links">
+            <a href="wochenplan.html">Wochenplan</a>
+            <a href="dashboard.html">Patienten-Dashboard</a>
+        </div>
+        <div class="user-badge">
+            Eingeloggt als: <span id="currentUser">Admin</span>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="header">
+    <div class="dashboard">
+        <div class="dashboard-header">
             <h1>Admin Panel</h1>
-            <button class="btn btn-outline" onclick="logout()">Abmelden</button>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showPanel('dashboard')">Dashboard</button>
-            <button class="tab" onclick="showPanel('appointments')">Termine</button>
-            <button class="tab" onclick="showPanel('users')">Patienten</button>
-            <button class="tab" onclick="showPanel('schedule')">Arbeitsplan</button>
-            <button class="tab" onclick="showPanel('vacation')">Urlaub</button>
+            <button class="tab-btn active" onclick="switchTab('users')">👥 User verwalten</button>
+            <button class="tab-btn" onclick="switchTab('appointments')">📅 Termine verwalten</button>
+            <button class="tab-btn" onclick="switchTab('arbeitsplan')">📋 Arbeitsplan</button>
+            <button class="tab-btn" onclick="switchTab('vacation')">🏖️ Urlaub</button>
         </div>
 
-        <!-- Dashboard -->
-        <div id="dashboard" class="panel active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Termine heute</h3>
-                    <div class="value" id="todayCount">0</div>
+        <!-- User Management -->
+        <div id="tab-users" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Neuen User erstellen</h3>
                 </div>
-                <div class="stat-card">
-                    <h3>Offene Termine</h3>
-                    <div class="value" id="openCount">0</div>
+                <form onsubmit="createUser(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="newUserName" required placeholder="Max Mustermann">
+                        </div>
+                        <div class="form-group">
+                            <label>E-Mail *</label>
+                            <input type="email" id="newUserEmail" required placeholder="email@beispiel.de">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Passwort *</label>
+                            <input type="password" id="newUserPassword" required placeholder="Mindestens 6 Zeichen">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" id="newUserPhone" placeholder="Optional">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">User erstellen</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Alle User</h3>
                 </div>
-                <div class="stat-card">
-                    <h3>Patienten</h3>
-                    <div class="value" id="userCount">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Urlaubsanträge</h3>
-                    <div class="value" id="vacationCount">0</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>E-Mail</th>
+                                <th>Telefon</th>
+                                <th>Erstellt</th>
+                                <th>Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Termine -->
-        <div id="appointments" class="panel">
-            <div class="card">
-                <h2>Alle Termine</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Leistung</th>
-                            <th>Datum</th>
-                            <th>Uhrzeit</th>
-                            <th>Status</th>
-                            <th>Aktionen</th>
-                        </tr>
-                    </thead>
-                    <tbody id="appointmentsTable"></tbody>
-                </table>
+        <!-- Appointments Management -->
+        <div id="tab-appointments" class="tab-content">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="statTotal">0</div>
+                    <div class="stat-label">Gesamt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statActive">0</div>
+                    <div class="stat-label">Aktive Termine</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statCancelled">0</div>
+                    <div class="stat-label">Abgesagt</div>
+                </div>
             </div>
-        </div>
 
-        <!-- Patienten -->
-        <div id="users" class="panel">
             <div class="card">
-                <h2>Registrierte Patienten</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>E-Mail</th>
-                            <th>Telefon</th>
-                            <th>Registriert</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTable"></tbody>
-                </table>
+                <div class="card-header">
+                    <h3>Alle Termine</h3>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Datum</th>
+                                <th>Uhrzeit</th>
+                                <th>Leistung</th>
+                                <th>Status</th>
+                                <th>Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <!-- Arbeitsplan -->
-        <div id="schedule" class="panel">
+        <div id="tab-arbeitsplan" class="tab-content">
             <div class="card">
-                <h2>Wochenarbeitsplan</h2>
-                <div class="schedule-grid" id="scheduleGrid"></div>
-                <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveSchedule()">Speichern</button>
+                <div class="card-header">
+                    <h3>Arbeitswoche festlegen</h3>
+                </div>
+                <form onsubmit="saveArbeitsplan(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mitarbeiter *</label>
+                            <select id="planEmployee" required>
+                                <option value="Dr. Erkens">Dr. Erkens</option>
+                                <option value="Assistenz">Assistenz</option>
+                                <option value="Praxis">Praxis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div style="padding: 10px 0; color: #888; font-size: 0.85rem;">Wähle die Arbeitstage aus</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Arbeitstage *</label>
+                        <div class="day-checkboxes">
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="workDay" value="1" checked>
+                                <span>Mo</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="workDay" value="2" checked>
+                                <span>Di</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="workDay" value="3" checked>
+                                <span>Mi</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="workDay" value="4" checked>
+                                <span>Do</span>
+                            </label>
+                            <label class="day-checkbox">
+                                <input type="checkbox" name="workDay" value="5" checked>
+                                <span>Fr</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Arbeitsbeginn *</label>
+                            <input type="time" id="planStart" required value="08:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Arbeitsende *</label>
+                            <input type="time" id="planEnd" required value="18:00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Pause von</label>
+                            <input type="time" id="planBreakStart" value="12:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Pause bis</label>
+                            <input type="time" id="planBreakEnd" value="13:00">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Aktuelle Wochenpläne</h3>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mitarbeiter</th>
+                                <th>Arbeitstage</th>
+                                <th>Arbeitszeit</th>
+                                <th>Pause</th>
+                                <th>Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="arbeitsplanTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Urlaub -->
+        <div id="tab-vacation" class="tab-content">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="vacTotal">30</div>
+                    <div class="stat-label">Tage gesamt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="vacUsed">0</div>
+                    <div class="stat-label">Genommen</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="vacRemaining">30</div>
+                    <div class="stat-label">Übrig</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Urlaubsantrag stellen</h3>
+                </div>
+                <form onsubmit="createVacation(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mitarbeiter *</label>
+                            <select id="vacEmployee" required onchange="loadVacationBalance()">
+                                <option value="Dr. Erkens">Dr. Erkens</option>
+                                <option value="Assistenz">Assistenz</option>
+                                <option value="Praxis">Praxis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Grund</label>
+                            <input type="text" id="vacReason" placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Von *</label>
+                            <input type="date" id="vacStart" required onchange="calcVacDays()">
+                        </div>
+                        <div class="form-group">
+                            <label>Bis *</label>
+                            <input type="date" id="vacEnd" required onchange="calcVacDays()">
+                        </div>
+                    </div>
+                    <div id="vacDaysInfo" style="margin-bottom: 16px; padding: 10px; background: #e8f5f2; border-radius: 8px; font-size: 0.9rem; display: none;">
+                        <strong id="vacDaysCount">0</strong> Urlaubstage werden beantragt
+                    </div>
+                    <button type="submit" class="btn btn-primary">Antrag stellen</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Urlaubsanträge</h3>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mitarbeiter</th>
+                                <th>Von</th>
+                                <th>Bis</th>
+                                <th>Tage</th>
+                                <th>Grund</th>
+                                <th>Status</th>
+                                <th>Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vacationTable"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- Urlaub -->
-        <div id="vacation" class="panel">
-            <div class="card">
-                <h2>Urlaubsanträge</h2>
-                <div id="vacationList"></div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h2>⚠️ Wirklich löschen?</h2>
+            <p style="margin-bottom: 20px; color: #666;">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Abbrechen</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Löschen</button>
             </div>
         </div>
     </div>
@@ -361,16 +436,412 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        const session = sessionStorage.getItem('admin_session');
-        if (!session) window.location.href = '/wochenplan.html';
+        let adminSession = null;
+        let deleteCallback = null;
 
-        const days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+        // Check if already logged in
+        (function() {
+            const session = sessionStorage.getItem('admin_session');
+            if (session) {
+                adminSession = session;
+                document.getElementById('loginOverlay').style.display = 'none';
+                const admin = JSON.parse(sessionStorage.getItem('admin_user') || '{}');
+                document.getElementById('currentUser').textContent = admin.name || 'Admin';
+                loadAllData();
+            }
+        })();
 
-        function showPanel(id) {
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorEl = document.getElementById('loginError');
+            
+            errorEl.style.display = 'none';
+            
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    adminSession = data.sessionId;
+                    sessionStorage.setItem('admin_session', data.sessionId);
+                    sessionStorage.setItem('admin_user', JSON.stringify(data.admin));
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('currentUser').textContent = data.admin.name;
+                    loadAllData();
+                } else {
+                    errorEl.textContent = data.error || 'Zugang verweigert';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Verbindungsfehler';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
             event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            if (tab === 'users') loadUsers();
+            if (tab === 'appointments') loadAppointments();
+            if (tab === 'arbeitsplan') loadArbeitsplan();
+            if (tab === 'vacation') { loadVacation(); loadVacationBalance(); }
+        }
+
+        async function loadAllData() {
+            loadUsers();
+            loadAppointments();
+            loadArbeitsplan();
+            loadVacation();
+            loadVacationBalance();
+        }
+
+        // ==================== USERS ====================
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${adminSession}` }
+                });
+                const users = await res.json();
+                renderUsers(users);
+            } catch (e) { console.error('Fehler:', e); }
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersTable');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #888;">Keine User vorhanden</td></tr>';
+                return;
+            }
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td>${u.name}</td>
+                    <td>${u.email}</td>
+                    <td>${u.phone || '-'}</td>
+                    <td>${new Date(u.created_at).toLocaleDateString('de-DE')}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('user', '${u.id}', '${u.name}')">Löschen</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function createUser(e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('newUserName').value,
+                email: document.getElementById('newUserEmail').value,
+                password: document.getElementById('newUserPassword').value,
+                phone: document.getElementById('newUserPhone').value
+            };
+            
+            try {
+                const res = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminSession}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await res.json();
+                
+                if (result.success) {
+                    showToast('User erfolgreich erstellt!');
+                    e.target.reset();
+                    loadUsers();
+                } else {
+                    showToast(result.error || 'Fehler beim Erstellen');
+                }
+            } catch (err) {
+                showToast('Verbindungsfehler');
+            }
+        }
+
+        // ==================== APPOINTMENTS ====================
+        async function loadAppointments() {
+            try {
+                const res = await fetch('/api/appointments');
+                const appointments = await res.json();
+                renderAppointments(appointments);
+            } catch (e) { console.error('Fehler:', e); }
+        }
+
+        function renderAppointments(appointments) {
+            const tbody = document.getElementById('appointmentsTable');
+            const active = appointments.filter(a => a.status !== 'abgesagt');
+            const cancelled = appointments.filter(a => a.status === 'abgesagt');
+            
+            document.getElementById('statTotal').textContent = appointments.length;
+            document.getElementById('statActive').textContent = active.length;
+            document.getElementById('statCancelled').textContent = cancelled.length;
+            
+            if (appointments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">Keine Termine vorhanden</td></tr>';
+                return;
+            }
+            
+            const statusMap = { offen: 'Offen', bestaetigt: 'Bestätigt', abgesagt: 'Abgesagt' };
+            const statusColors = { offen: '#ffc107', bestaetigt: '#28a745', abgesagt: '#dc3545' };
+            
+            tbody.innerHTML = appointments.map(a => `
+                <tr>
+                    <td>${a.name}</td>
+                    <td>${new Date(a.date).toLocaleDateString('de-DE')}</td>
+                    <td>${a.time} Uhr</td>
+                    <td>${a.service || '-'}</td>
+                    <td><span style="color: ${statusColors[a.status]}; font-weight: 600;">${statusMap[a.status]}</span></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('appointment', '${a.id}', '${a.name}')">Löschen</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ==================== ARBEITSPLAN ====================
+        const dayNames = { 1: 'Mo', 2: 'Di', 3: 'Mi', 4: 'Do', 5: 'Fr' };
+        
+        async function loadArbeitsplan() {
+            try {
+                const res = await fetch('/api/arbeitsplan');
+                const schedules = await res.json();
+                renderArbeitsplan(schedules);
+            } catch (e) { console.error('Fehler:', e); }
+        }
+
+        function renderArbeitsplan(schedules) {
+            const tbody = document.getElementById('arbeitsplanTable');
+            if (schedules.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #888;">Keine Arbeitspläne vorhanden</td></tr>';
+                return;
+            }
+            tbody.innerHTML = schedules.map(s => {
+                const days = Array.isArray(s.work_days) ? s.work_days : JSON.parse(s.work_days || '[]');
+                const dayLabels = days.map(d => dayNames[d] || d).join(', ');
+                return `
+                    <tr>
+                        <td><strong>${s.employee}</strong></td>
+                        <td>${dayLabels}</td>
+                        <td>${s.start_time} - ${s.end_time}</td>
+                        <td>${s.break_start && s.break_end ? s.break_start + ' - ' + s.break_end : '-'}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('arbeitsplan', '${s.id}')">Löschen</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function saveArbeitsplan(e) {
+            e.preventDefault();
+            
+            const workDays = Array.from(document.querySelectorAll('input[name="workDay"]:checked'))
+                .map(cb => parseInt(cb.value));
+            
+            if (workDays.length === 0) {
+                showToast('Bitte mindestens einen Arbeitstag auswählen');
+                return;
+            }
+            
+            const data = {
+                employee: document.getElementById('planEmployee').value,
+                work_days: workDays,
+                start_time: document.getElementById('planStart').value,
+                end_time: document.getElementById('planEnd').value,
+                break_start: document.getElementById('planBreakStart').value || null,
+                break_end: document.getElementById('planBreakEnd').value || null
+            };
+            
+            try {
+                const res = await fetch('/api/arbeitsplan', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminSession}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await res.json();
+                
+                if (result.success) {
+                    showToast('Arbeitsplan gespeichert!');
+                    loadArbeitsplan();
+                } else {
+                    showToast(result.error || 'Fehler beim Speichern');
+                }
+            } catch (err) {
+                showToast('Verbindungsfehler');
+            }
+        }
+
+        // ==================== URLAUB ====================
+        const vacStatusMap = { offen: '⏳ Offen', genehmigt: '✅ Genehmigt', abgelehnt: '❌ Abgelehnt' };
+        const vacStatusColors = { offen: '#ffc107', genehmigt: '#28a745', abgelehnt: '#dc3545' };
+
+        async function loadVacation() {
+            try {
+                const res = await fetch('/api/vacation');
+                const requests = await res.json();
+                renderVacation(requests);
+            } catch (e) { console.error('Fehler:', e); }
+        }
+
+        function renderVacation(requests) {
+            const tbody = document.getElementById('vacationTable');
+            if (requests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #888;">Keine Urlaubsanträge</td></tr>';
+                return;
+            }
+            tbody.innerHTML = requests.map(v => `
+                <tr>
+                    <td><strong>${v.employee}</strong></td>
+                    <td>${new Date(v.start_date).toLocaleDateString('de-DE')}</td>
+                    <td>${new Date(v.end_date).toLocaleDateString('de-DE')}</td>
+                    <td>${v.days}</td>
+                    <td>${v.reason || '-'}</td>
+                    <td><span style="color: ${vacStatusColors[v.status]}; font-weight: 600;">${vacStatusMap[v.status]}</span></td>
+                    <td>
+                        ${v.status === 'offen' ? `
+                            <button class="btn btn-primary btn-sm" onclick="updateVacation('${v.id}', 'genehmigt')">✓</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateVacation('${v.id}', 'abgelehnt')">✗</button>
+                        ` : ''}
+                        <button class="btn btn-secondary btn-sm" onclick="confirmDelete('vacation', '${v.id}')">🗑</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadVacationBalance() {
+            const employee = document.getElementById('vacEmployee').value;
+            try {
+                const res = await fetch(`/api/vacation/balance/${encodeURIComponent(employee)}`);
+                const data = await res.json();
+                document.getElementById('vacTotal').textContent = data.total;
+                document.getElementById('vacUsed').textContent = data.used;
+                document.getElementById('vacRemaining').textContent = data.remaining;
+            } catch (e) { console.error('Fehler:', e); }
+        }
+
+        function calcVacDays() {
+            const start = document.getElementById('vacStart').value;
+            const end = document.getElementById('vacEnd').value;
+            if (!start || !end) return;
+            
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            let days = 0;
+            const current = new Date(startDate);
+            while (current <= endDate) {
+                const day = current.getDay();
+                if (day !== 0 && day !== 6) days++;
+                current.setDate(current.getDate() + 1);
+            }
+            
+            const info = document.getElementById('vacDaysInfo');
+            document.getElementById('vacDaysCount').textContent = days;
+            info.style.display = 'block';
+        }
+
+        async function createVacation(e) {
+            e.preventDefault();
+            const data = {
+                employee: document.getElementById('vacEmployee').value,
+                start_date: document.getElementById('vacStart').value,
+                end_date: document.getElementById('vacEnd').value,
+                reason: document.getElementById('vacReason').value
+            };
+            
+            try {
+                const res = await fetch('/api/vacation', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminSession}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await res.json();
+                
+                if (result.success) {
+                    showToast('Urlaubsantrag erstellt!');
+                    e.target.reset();
+                    document.getElementById('vacDaysInfo').style.display = 'none';
+                    loadVacation();
+                    loadVacationBalance();
+                } else {
+                    showToast(result.error || 'Fehler beim Erstellen');
+                }
+            } catch (err) {
+                showToast('Verbindungsfehler');
+            }
+        }
+
+        async function updateVacation(id, status) {
+            try {
+                const res = await fetch(`/api/vacation/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminSession}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (res.ok) {
+                    showToast(status === 'genehmigt' ? 'Genehmigt!' : 'Abgelehnt');
+                    loadVacation();
+                    loadVacationBalance();
+                }
+            } catch (e) {
+                showToast('Fehler');
+            }
+        }
+
+        // ==================== DELETE ====================
+        function confirmDelete(type, id, name) {
+            deleteCallback = async () => {
+                let endpoint = '';
+                if (type === 'user') endpoint = `/api/admin/users/${id}`;
+                if (type === 'appointment') endpoint = `/api/admin/appointments/${id}`;
+                if (type === 'arbeitsplan') endpoint = `/api/arbeitsplan/${id}`;
+                if (type === 'vacation') endpoint = `/api/vacation/${id}`;
+                
+                try {
+                    await fetch(endpoint, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${adminSession}` }
+                    });
+                    showToast('Erfolgreich gelöscht!');
+                    closeDeleteModal();
+                    if (type === 'user') loadUsers();
+                    if (type === 'appointment') loadAppointments();
+                    if (type === 'arbeitsplan') loadArbeitsplan();
+                    if (type === 'vacation') loadVacation();
+                } catch (e) {
+                    showToast('Fehler beim Löschen');
+                }
+            };
+            
+            document.getElementById('confirmDeleteBtn').onclick = deleteCallback;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteCallback = null;
         }
 
         function showToast(msg) {
@@ -379,141 +850,6 @@
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
-
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = '/wochenplan.html';
-        }
-
-        async function loadDashboard() {
-            try {
-                const res = await fetch('/api/appointments');
-                const apts = await res.json();
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('todayCount').textContent = apts.filter(a => a.date === today).length;
-                document.getElementById('openCount').textContent = apts.filter(a => a.status === 'offen').length;
-            } catch (e) { console.error(e); }
-        }
-
-        async function loadAppointments() {
-            try {
-                const res = await fetch('/api/appointments');
-                const apts = await res.json();
-                document.getElementById('appointmentsTable').innerHTML = apts.map(a => `
-                    <tr>
-                        <td>${a.name}</td>
-                        <td>${a.service}</td>
-                        <td>${a.date}</td>
-                        <td>${a.time}</td>
-                        <td><span class="badge badge-${a.status}">${a.status}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-success" onclick="updateApt('${a.id}', 'bestätigt')">✓</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteApt('${a.id}')">✕</button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        async function updateApt(id, status) {
-            await fetch(`/api/appointments/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session },
-                body: JSON.stringify({ status })
-            });
-            loadAppointments();
-            showToast('Status aktualisiert');
-        }
-
-        async function deleteApt(id) {
-            if (!confirm('Termin wirklich löschen?')) return;
-            await fetch(`/api/appointments/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + session }
-            });
-            loadAppointments();
-            showToast('Termin gelöscht');
-        }
-
-        async function loadSchedule() {
-            const grid = document.getElementById('scheduleGrid');
-            grid.innerHTML = days.map((day, i) => `
-                <div class="day-card">
-                    <h4>${day.slice(0, 2)}</h4>
-                    <input type="checkbox" id="work_${i}" checked>
-                    <input type="time" id="start_${i}" value="08:00">
-                    <input type="time" id="end_${i}" value="18:00">
-                </div>
-            `).join('');
-
-            try {
-                const res = await fetch('/api/work-schedule');
-                const schedule = await res.json();
-                schedule.forEach(s => {
-                    const i = s.day_of_week;
-                    document.getElementById(`work_${i}`).checked = s.is_workday;
-                    document.getElementById(`start_${i}`).value = s.start_time || '08:00';
-                    document.getElementById(`end_${i}`).value = s.end_time || '18:00';
-                });
-            } catch (e) { console.error(e); }
-        }
-
-        async function saveSchedule() {
-            for (let i = 0; i < 7; i++) {
-                await fetch('/api/work-schedule', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session },
-                    body: JSON.stringify({
-                        day_of_week: i,
-                        is_workday: document.getElementById(`work_${i}`).checked,
-                        start_time: document.getElementById(`start_${i}`).value,
-                        end_time: document.getElementById(`end_${i}`).value
-                    })
-                });
-            }
-            showToast('Arbeitsplan gespeichert');
-        }
-
-        async function loadVacation() {
-            try {
-                const res = await fetch('/api/vacation');
-                const vacations = await res.json();
-                document.getElementById('vacationCount').textContent = vacations.filter(v => v.status === 'offen').length;
-                document.getElementById('vacationList').innerHTML = vacations.length === 0
-                    ? '<p style="color: #666; text-align: center; padding: 2rem;">Keine Urlaubsanträge vorhanden.</p>'
-                    : vacations.map(v => `
-                        <div class="vacation-item">
-                            <div>
-                                <strong>${v.employee}</strong><br>
-                                <small>${v.start_date} bis ${v.end_date} (${v.days} Tage)</small>
-                            </div>
-                            <div>
-                                <span class="badge badge-${v.status}">${v.status}</span>
-                                ${v.status === 'offen' ? `
-                                    <button class="btn btn-sm btn-success" onclick="reviewVacation('${v.id}', 'genehmigt')">✓</button>
-                                    <button class="btn btn-sm btn-danger" onclick="reviewVacation('${v.id}', 'abgelehnt')">✕</button>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        async function reviewVacation(id, status) {
-            await fetch(`/api/vacation/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session },
-                body: JSON.stringify({ status })
-            });
-            loadVacation();
-            showToast(`Urlaub ${status}`);
-        }
-
-        // Init
-        loadDashboard();
-        loadAppointments();
-        loadSchedule();
-        loadVacation();
     </script>
 </body>
 </html>
