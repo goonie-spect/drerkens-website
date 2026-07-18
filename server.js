@@ -574,6 +574,10 @@ app.get('/api/wochenplan/verify', async (req, res) => {
     }
 });
 
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', env: { hasUrl: !!process.env.SUPABASE_URL, hasKey: !!process.env.SUPABASE_SERVICE_KEY } });
+});
+
 // ==================== START ====================
 
 if (!process.env.VERCEL) {
