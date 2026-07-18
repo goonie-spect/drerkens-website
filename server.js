@@ -238,6 +238,43 @@ app.put('/api/appointments/:id', async (req, res) => {
     res.json({ success: true });
 });
 
+app.put('/api/appointments/:id/decline', async (req, res) => {
+    const { error } = await supabase
+        .from('appointments')
+        .update({ status: 'abgesagt' })
+        .eq('id', req.params.id);
+
+    if (error) return res.status(500).json({ error: 'Absage fehlgeschlagen' });
+
+    const { data: apt } = await supabase
+        .from('appointments')
+        .select('*')
+        .eq('id', req.params.id)
+        .single();
+
+    if (apt && transporter) {
+        try {
+            await transporter.sendMail({
+                from: '"Dr. Erkens Praxis" <goonie6688@gmail.com>',
+                to: apt.email,
+                subject: `Ihr Termin wurde abgesagt`,
+                html: `
+                    <h2>Termin abgesagt</h2>
+                    <p>Sehr geehrte(r) ${apt.name},</p>
+                    <p>Leider mussten wir Ihren Termin am ${apt.date} um ${apt.time} Uhr absagen.</p>
+                    <p>Bitte kontaktieren Sie uns für eine Neuterminierung.</p>
+                    <br>
+                    <p>Mit freundlichen Grüßen<br>Dr. med. Friedhelm Erkens</p>
+                `
+            });
+        } catch (e) {
+            console.error('E-Mail-Fehler:', e);
+        }
+    }
+
+    res.json({ success: true });
+});
+
 app.delete('/api/appointments/:id', async (req, res) => {
     const { error } = await supabase
         .from('appointments')
