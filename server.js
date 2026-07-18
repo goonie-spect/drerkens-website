@@ -534,18 +534,12 @@ app.post('/api/wochenplan/login', async (req, res) => {
         const validRoles = ['Dr. Erkens', 'Praxis', 'Assistenz'];
         if (!validRoles.includes(role)) return res.status(400).json({ error: 'Ungültige Rolle' });
 
-        const sessionId = crypto.randomBytes(32).toString('hex');
-        try {
-            await supabase.from('sessions').insert({
-                session_id: sessionId,
-                user_id: 'wochenplan:' + role,
-                created_at: new Date().toISOString()
-            });
-        } catch(e) {
-            console.error('Wochenplan session insert error:', e.message);
-        }
+        const payload = { role, exp: Date.now() + 24 * 60 * 60 * 1000 };
+        const data = JSON.stringify(payload);
+        const sig = crypto.createHmac('sha256', WOCHENPLAN_PIN).update(data).digest('hex');
+        const token = Buffer.from(data).toString('base64') + '.' + sig;
 
-        res.json({ success: true, sessionId, role });
+        res.json({ success: true, sessionId: token, role });
     } catch(e) {
         console.error('Wochenplan login error:', e);
         res.status(500).json({ error: 'Serverfehler' });
@@ -554,20 +548,21 @@ app.post('/api/wochenplan/login', async (req, res) => {
 
 app.get('/api/wochenplan/verify', async (req, res) => {
     try {
-        const sessionId = req.headers.authorization?.replace('Bearer ', '');
-        if (!sessionId) return res.status(401).json({ error: 'Nicht eingeloggt' });
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        if (!token) return res.status(401).json({ error: 'Nicht eingeloggt' });
 
-        const { data } = await supabase
-            .from('sessions')
-            .select('*')
-            .eq('session_id', sessionId)
-            .single();
+        const parts = token.split('.');
+        if (parts.length !== 2) return res.status(401).json({ error: 'Ungültiger Token' });
 
-        if (!data || !data.user_id?.startsWith('wochenplan:')) {
-            return res.status(401).json({ error: 'Session abgelaufen' });
-        }
+        const data = Buffer.from(parts[0], 'base64').toString('utf-8');
+        const expectedSig = crypto.createHmac('sha256', WOCHENPLAN_PIN).update(data).digest('hex');
 
-        res.json({ success: true, role: data.user_id.replace('wochenplan:', '') });
+        if (parts[1] !== expectedSig) return res.status(401).json({ error: 'Ungültiger Token' });
+
+        const payload = JSON.parse(data);
+        if (Date.now() > payload.exp) return res.status(401).json({ error: 'Session abgelaufen' });
+
+        res.json({ success: true, role: payload.role });
     } catch(e) {
         console.error('Wochenplan verify error:', e);
         res.status(500).json({ error: 'Serverfehler' });
