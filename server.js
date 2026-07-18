@@ -10,9 +10,16 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Supabase Client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.error('WARN: SUPABASE_URL or SUPABASE_SERVICE_KEY not set');
+}
+
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
+    supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseKey || 'placeholder'
 );
 
 // E-Mail-Konfiguration
