@@ -63,21 +63,32 @@ function verifyPassword(password, salt, hash) {
 // Session Management
 async function createSession(userId) {
     const sessionId = crypto.randomBytes(32).toString('hex');
-    await supabase.from('sessions').insert({
-        session_id: sessionId,
-        user_id: userId,
-        created_at: new Date().toISOString()
-    });
+    try {
+        const { error } = await supabase.from('sessions').insert({
+            session_id: sessionId,
+            user_id: userId,
+            created_at: new Date().toISOString()
+        });
+        if (error) console.error('Session insert error:', error.message);
+    } catch(e) {
+        console.error('Session create error:', e.message);
+    }
     return sessionId;
 }
 
 async function getSession(sessionId) {
-    const { data } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('session_id', sessionId)
-        .single();
-    return data || null;
+    try {
+        const { data, error } = await supabase
+            .from('sessions')
+            .select('*')
+            .eq('session_id', sessionId)
+            .single();
+        if (error) { console.error('Session get error:', error.message); return null; }
+        return data || null;
+    } catch(e) {
+        console.error('Session get error:', e.message);
+        return null;
+    }
 }
 
 // Auth Middleware
@@ -516,37 +527,51 @@ async function getUsedVacationDays(employee) {
 const WOCHENPLAN_PIN = process.env.WOCHENPLAN_PIN || '3911';
 
 app.post('/api/wochenplan/login', async (req, res) => {
-    const { pin, role } = req.body;
-    if (pin !== WOCHENPLAN_PIN) return res.status(401).json({ error: 'Falscher Code' });
+    try {
+        const { pin, role } = req.body;
+        if (pin !== WOCHENPLAN_PIN) return res.status(401).json({ error: 'Falscher Code' });
 
-    const validRoles = ['Dr. Erkens', 'Praxis', 'Assistenz'];
-    if (!validRoles.includes(role)) return res.status(400).json({ error: 'Ungültige Rolle' });
+        const validRoles = ['Dr. Erkens', 'Praxis', 'Assistenz'];
+        if (!validRoles.includes(role)) return res.status(400).json({ error: 'Ungültige Rolle' });
 
-    const sessionId = crypto.randomBytes(32).toString('hex');
-    await supabase.from('sessions').insert({
-        session_id: sessionId,
-        user_id: 'wochenplan:' + role,
-        created_at: new Date().toISOString()
-    });
+        const sessionId = crypto.randomBytes(32).toString('hex');
+        try {
+            await supabase.from('sessions').insert({
+                session_id: sessionId,
+                user_id: 'wochenplan:' + role,
+                created_at: new Date().toISOString()
+            });
+        } catch(e) {
+            console.error('Wochenplan session insert error:', e.message);
+        }
 
-    res.json({ success: true, sessionId, role });
+        res.json({ success: true, sessionId, role });
+    } catch(e) {
+        console.error('Wochenplan login error:', e);
+        res.status(500).json({ error: 'Serverfehler' });
+    }
 });
 
 app.get('/api/wochenplan/verify', async (req, res) => {
-    const sessionId = req.headers.authorization?.replace('Bearer ', '');
-    if (!sessionId) return res.status(401).json({ error: 'Nicht eingeloggt' });
+    try {
+        const sessionId = req.headers.authorization?.replace('Bearer ', '');
+        if (!sessionId) return res.status(401).json({ error: 'Nicht eingeloggt' });
 
-    const { data } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('session_id', sessionId)
-        .single();
+        const { data } = await supabase
+            .from('sessions')
+            .select('*')
+            .eq('session_id', sessionId)
+            .single();
 
-    if (!data || !data.user_id?.startsWith('wochenplan:')) {
-        return res.status(401).json({ error: 'Session abgelaufen' });
+        if (!data || !data.user_id?.startsWith('wochenplan:')) {
+            return res.status(401).json({ error: 'Session abgelaufen' });
+        }
+
+        res.json({ success: true, role: data.user_id.replace('wochenplan:', '') });
+    } catch(e) {
+        console.error('Wochenplan verify error:', e);
+        res.status(500).json({ error: 'Serverfehler' });
     }
-
-    res.json({ success: true, role: data.user_id.replace('wochenplan:', '') });
 });
 
 // ==================== START ====================
