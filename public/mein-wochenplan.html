@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mein Wochenplan | Dr. Erkens</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fa; color: #1a1a2e; }
+        .top-nav { background: linear-gradient(135deg, #1a6b5c, #0f4a3f); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav h2 { color: white; font-size: 1.2rem; }
+        .nav-links { display: flex; gap: 10px; align-items: center; }
+        .nav-links a, .nav-links button { color: white; text-decoration: none; border: 2px solid rgba(255,255,255,0.5); padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; transition: all 0.3s; background: transparent; cursor: pointer; font-family: inherit; }
+        .nav-links a:hover, .nav-links button:hover { background: white; color: #1a6b5c; border-color: white; }
+        .nav-links a.active { background: white; color: #1a6b5c; }
+        .nav-user { color: white; font-size: 0.9rem; margin-right: 10px; }
+        .toolbar { max-width: 1100px; margin: 0 auto; padding: 20px 20px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .date-nav { display: flex; gap: 10px; align-items: center; }
+        .date-nav button { padding: 10px 16px; border: none; background: #1a6b5c; color: white; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
+        .date-nav button:hover { background: #0f4a3f; }
+        .date-nav span { font-size: 1.1rem; font-weight: 600; min-width: 220px; text-align: center; }
+        .raster-wrapper { max-width: 1100px; margin: 20px auto; padding: 0 20px 20px; }
+        .raster-container { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
+        .raster-grid { display: grid; grid-template-columns: repeat(5, 1fr); }
+        .day-column { border-right: 1px solid #e9ecef; display: flex; flex-direction: column; }
+        .day-column:last-child { border-right: none; }
+        .day-header { padding: 12px 8px; text-align: center; font-weight: 600; background: #e8f5f2; border-bottom: 1px solid #e9ecef; }
+        .day-header.today { background: #1a6b5c; color: white; }
+        .day-header-name { font-size: 0.85rem; }
+        .day-header-date { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
+        .day-slots { flex: 1; }
+        .slot-cell { border-bottom: 1px solid #f0f0f0; padding: 6px 8px; min-height: 50px; display: flex; align-items: center; gap: 6px; }
+        .slot-time { font-size: 0.7rem; color: #1a6b5c; font-weight: 600; min-width: 36px; }
+        .my-appointment { background: linear-gradient(135deg, #1a6b5c, #2d9e87); color: white; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; flex: 1; }
+        .my-appointment .apt-time-label { font-weight: 700; font-size: 0.8rem; }
+        .my-appointment .apt-service-label { opacity: 0.85; font-size: 0.7rem; margin-top: 2px; }
+        .my-appointment.confirmed { background: linear-gradient(135deg, #1a6b5c, #2d9e87); }
+        .my-appointment.pending { background: linear-gradient(135deg, #ffc107, #ffca2c); color: #1a1a2e; }
+        .my-appointment.cancelled { background: #e9ecef; color: #999; text-decoration: line-through; }
+        .legend { display: flex; gap: 20px; padding: 12px 20px; background: #f8f9fa; border-top: 1px solid #e9ecef; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
+        .legend-color { width: 14px; height: 14px; border-radius: 4px; }
+        .legend-color.confirmed { background: linear-gradient(135deg, #1a6b5c, #2d9e87); }
+        .legend-color.pending { background: linear-gradient(135deg, #ffc107, #ffca2c); }
+        .legend-color.empty { background: #f8f9fa; border: 2px solid #e9ecef; }
+        .no-appointments-msg { text-align: center; padding: 40px; color: #888; font-size: 0.95rem; }
+        @media (max-width: 768px) { .raster-grid { grid-template-columns: repeat(5, 1fr); } .slot-cell { min-height: 36px; font-size: 0.65rem; } .stats-bar { display: none; } }
+        @media print { .top-nav, .toolbar, .legend { display: none; } .raster-container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <h2>Dr. Erkens</h2>
+        <div class="nav-links">
+            <span class="nav-user" id="userName"></span>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="mein-wochenplan.html" class="active">Wochenplan</a>
+            <button onclick="logout()">Abmelden</button>
+        </div>
+    </nav>
+
+    <div class="toolbar">
+        <div class="date-nav">
+            <button onclick="prevWeek()">&#8592;</button>
+            <span id="weekRange"></span>
+            <button onclick="nextWeek()">&#8594;</button>
+        </div>
+    </div>
+
+    <div class="raster-wrapper">
+        <div class="raster-container">
+            <div class="raster-grid" id="rasterGrid"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color confirmed"></div><span>Bestätigt</span></div>
+                <div class="legend-item"><div class="legend-color pending"></div><span>Offen</span></div>
+                <div class="legend-item"><div class="legend-color empty"></div><span>Verfügbar</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const session = sessionStorage.getItem('auth_session');
+        const user = JSON.parse(sessionStorage.getItem('auth_user') || '{}');
+        if (!session) window.location.href = 'login.html';
+
+        document.getElementById('userName').textContent = user.name || '';
+
+        let myAppointments = [];
+        let currentWeekStart = getWeekStart(new Date());
+
+        const timeSlots = [
+            '08:00','08:30','09:00','09:30','10:00','10:30',
+            '11:00','11:30','13:00','13:30','14:00','14:30',
+            '15:00','15:30','16:00','16:30','17:00','17:30'
+        ];
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            d.setHours(0,0,0,0);
+            return d;
+        }
+
+        function formatDateISO(date) { return date.toISOString().split('T')[0]; }
+        function formatDate(date) { return date.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+        function getDayName(date) { return date.toLocaleDateString('de-DE',{weekday:'short'}); }
+
+        async function loadMyAppointments() {
+            try {
+                const res = await fetch('/api/auth/appointments', {
+                    headers: { 'Authorization': `Bearer ${session}` }
+                });
+                if (res.status === 401) { sessionStorage.clear(); window.location.href = 'login.html'; return; }
+                myAppointments = await res.json();
+                renderRaster();
+            } catch(e) { console.error('Fehler:', e); }
+        }
+
+        function renderRaster() {
+            const grid = document.getElementById('rasterGrid');
+            grid.innerHTML = '';
+            const today = new Date(); today.setHours(0,0,0,0);
+
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = formatDateISO(date);
+                const isToday = date.getTime() === today.getTime();
+                const dayOfWeek = date.getDay();
+                const isFriday = dayOfWeek === 5;
+
+                const col = document.createElement('div');
+                col.className = 'day-column';
+
+                const header = document.createElement('div');
+                header.className = `day-header ${isToday ? 'today' : ''}`;
+                header.innerHTML = `<div class="day-header-name">${getDayName(date)}</div><div class="day-header-date">${formatDate(date)}</div>`;
+                col.appendChild(header);
+
+                const slots = document.createElement('div');
+                slots.className = 'day-slots';
+
+                timeSlots.forEach(time => {
+                    if (isFriday && time > '14:00') return;
+                    const slotAppt = myAppointments.find(a => a.date === dateStr && a.time === time);
+                    const cell = document.createElement('div');
+                    cell.className = 'slot-cell';
+
+                    if (slotAppt) {
+                        const statusClass = slotAppt.status === 'bestaetigt' ? 'confirmed' : slotAppt.status === 'abgesagt' ? 'cancelled' : 'pending';
+                        cell.innerHTML = `
+                            <span class="slot-time">${time}</span>
+                            <div class="my-appointment ${statusClass}">
+                                <div class="apt-time-label">${slotAppt.time} Uhr</div>
+                                <div class="apt-service-label">${slotAppt.service || 'Termin'}</div>
+                            </div>
+                        `;
+                    } else {
+                        cell.innerHTML = `<span class="slot-time">${time}</span>`;
+                    }
+
+                    slots.appendChild(cell);
+                });
+
+                col.appendChild(slots);
+                grid.appendChild(col);
+            }
+
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 4);
+            document.getElementById('weekRange').textContent = `${formatDate(currentWeekStart)} - ${formatDate(weekEnd)}`;
+        }
+
+        function prevWeek() { currentWeekStart.setDate(currentWeekStart.getDate() - 7); renderRaster(); }
+        function nextWeek() { currentWeekStart.setDate(currentWeekStart.getDate() + 7); renderRaster(); }
+
+        function logout() {
+            fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${session}` } });
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        loadMyAppointments();
+    </script>
+</body>
+</html>
