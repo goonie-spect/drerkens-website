@@ -544,37 +544,34 @@ app.post('/api/vacation', requireAuth, async (req, res) => {
         return res.status(400).json({ error: `Nur ${VACATION_DAYS_PER_YEAR - usedDays} Urlaubstage verfügbar` });
     }
 
-    const { error } = await supabase
-        .from('vacation')
-        .insert({
-            employee,
-            start_date,
-            end_date,
-            days,
-            reason: reason || '',
-            status: 'offen',
-            created_by: req.userId,
-            created_at: new Date().toISOString()
-        });
+    const insertData = {
+        employee,
+        start_date,
+        end_date,
+        days,
+        reason: reason || '',
+        status: 'offen',
+        created_at: new Date().toISOString()
+    };
 
-    // Falls coverage-Spalte nicht existiert, erneut ohne sie versuchen
-    if (error && error.message && error.message.includes('coverage')) {
-        const { error: retryError } = await supabase
-            .from('vacation')
-            .insert({
-                employee,
-                start_date,
-                end_date,
-                days,
-                reason: reason || '',
-                status: 'offen',
-                created_by: req.userId,
-                created_at: new Date().toISOString()
-            });
-        if (retryError) return res.status(500).json({ error: 'Antrag fehlgeschlagen' });
-    } else if (error) {
-        return res.status(500).json({ error: 'Antrag fehlgeschlagen' });
+    // coverage nur hinzufügen wenn Spalte existiert
+    if (coverage) insertData.coverage = coverage;
+
+    // created_by nur setzen wenn es eine gueltige UUID ist
+    if (req.userId && !req.userId.startsWith('wochenplan:')) {
+        insertData.created_by = req.userId;
     }
+
+    const { data, error } = await supabase
+        .from('vacation')
+        .insert(insertData)
+        .select();
+
+    if (error) {
+        console.error('Vacation insert error:', error.message);
+        return res.status(500).json({ error: 'Antrag fehlgeschlagen: ' + error.message });
+    }
+    res.json({ success: true });
     res.json({ success: true });
 });
 
