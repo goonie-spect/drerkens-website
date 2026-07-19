@@ -552,13 +552,29 @@ app.post('/api/vacation', requireAuth, async (req, res) => {
             end_date,
             days,
             reason: reason || '',
-            coverage: coverage || 'Ungeklärt',
             status: 'offen',
             created_by: req.userId,
             created_at: new Date().toISOString()
         });
 
-    if (error) return res.status(500).json({ error: 'Antrag fehlgeschlagen' });
+    // Falls coverage-Spalte nicht existiert, erneut ohne sie versuchen
+    if (error && error.message && error.message.includes('coverage')) {
+        const { error: retryError } = await supabase
+            .from('vacation')
+            .insert({
+                employee,
+                start_date,
+                end_date,
+                days,
+                reason: reason || '',
+                status: 'offen',
+                created_by: req.userId,
+                created_at: new Date().toISOString()
+            });
+        if (retryError) return res.status(500).json({ error: 'Antrag fehlgeschlagen' });
+    } else if (error) {
+        return res.status(500).json({ error: 'Antrag fehlgeschlagen' });
+    }
     res.json({ success: true });
 });
 
