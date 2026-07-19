@@ -422,6 +422,82 @@ app.post('/api/work-schedule', requireAuth, async (req, res) => {
     res.json({ success: true });
 });
 
+// ==================== BLOCKED SLOTS API ====================
+
+app.get('/api/blocked-slots', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('blocked_slots')
+            .select('*');
+        if (error) return res.status(500).json({ error: 'Fehler beim Laden' });
+        res.json(data || []);
+    } catch(e) {
+        res.json([]);
+    }
+});
+
+app.post('/api/blocked-slots', async (req, res) => {
+    const { date, time, reason } = req.body;
+    if (!date || !time) return res.status(400).json({ error: 'Datum und Uhrzeit erforderlich' });
+
+    try {
+        const { data, error } = await supabase
+            .from('blocked_slots')
+            .upsert({ date, time, reason: reason || '' }, { onConflict: 'date,time' })
+            .select()
+            .single();
+        if (error) return res.status(500).json({ error: 'Blockieren fehlgeschlagen' });
+        res.json({ success: true, slot: data });
+    } catch(e) {
+        res.status(500).json({ error: 'Blockieren fehlgeschlagen' });
+    }
+});
+
+app.post('/api/blocked-slots/batch', async (req, res) => {
+    const { slots } = req.body;
+    if (!slots || !Array.isArray(slots)) return res.status(400).json({ error: 'slots Array erforderlich' });
+
+    try {
+        const { data, error } = await supabase
+            .from('blocked_slots')
+            .upsert(slots.map(s => ({ date: s.date, time: s.time, reason: s.reason || '' })), { onConflict: 'date,time' });
+        if (error) return res.status(500).json({ error: 'Blockieren fehlgeschlagen' });
+        res.json({ success: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Blockieren fehlgeschlagen' });
+    }
+});
+
+app.delete('/api/blocked-slots/:date/:time', async (req, res) => {
+    const { date, time } = req.params;
+    try {
+        const { error } = await supabase
+            .from('blocked_slots')
+            .delete()
+            .eq('date', date)
+            .eq('time', decodeURIComponent(time));
+        if (error) return res.status(500).json({ error: 'Entfernen fehlgeschlagen' });
+        res.json({ success: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Entfernen fehlgeschlagen' });
+    }
+});
+
+app.delete('/api/blocked-slots', async (req, res) => {
+    const { date } = req.query;
+    if (!date) return res.status(400).json({ error: 'Datum erforderlich' });
+    try {
+        const { error } = await supabase
+            .from('blocked_slots')
+            .delete()
+            .eq('date', date);
+        if (error) return res.status(500).json({ error: 'Entfernen fehlgeschlagen' });
+        res.json({ success: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Entfernen fehlgeschlagen' });
+    }
+});
+
 // ==================== VACATION API ====================
 
 const VACATION_DAYS_PER_YEAR = 30;

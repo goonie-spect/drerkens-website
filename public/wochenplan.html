@@ -287,6 +287,70 @@
         .legend-color.confirmed { background: linear-gradient(135deg, #1a6b5c, #2d9e87); }
         .legend-color.pending { background: linear-gradient(135deg, #ffc107, #ffca2c); }
         .legend-color.empty { background: #f8f9fa; border: 2px solid #e9ecef; }
+        .legend-color.blocked { background: repeating-linear-gradient(45deg, #dc3545, #dc3545 5px, #ff6b7a 5px, #ff6b7a 10px); }
+
+        .slot-cell.blocked {
+            background: repeating-linear-gradient(45deg, rgba(220,53,69,0.08), rgba(220,53,69,0.08) 5px, rgba(220,53,69,0.15) 5px, rgba(220,53,69,0.15) 10px);
+            cursor: pointer;
+        }
+        .slot-cell.blocked:hover { background: repeating-linear-gradient(45deg, rgba(220,53,69,0.15), rgba(220,53,69,0.15) 5px, rgba(220,53,69,0.25) 5px, rgba(220,53,69,0.25) 10px); }
+        .blocked-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            color: #dc3545;
+            font-weight: 600;
+            text-align: center;
+            pointer-events: none;
+        }
+        .blocked-icon {
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .blocker-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s;
+            border: 2px solid #e9ecef;
+        }
+        .blocker-toggle.active {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        .blocker-toggle:hover { border-color: #dc3545; }
+        .blocker-toggle-icon {
+            width: 36px;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .blocker-toggle.active .blocker-toggle-icon { background: #dc3545; }
+        .blocker-toggle-knob {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .blocker-toggle.active .blocker-toggle-knob { left: 18px; }
 
         /* Detail Modal (beim Klick auf Termin) */
         .modal {
@@ -541,6 +605,10 @@
             <button onclick="nextWeek()">&#8594;</button>
         </div>
         <div class="stats-bar">
+            <div class="blocker-toggle" id="blockerToggle" onclick="toggleBlockerMode()" title="Zeitblöcke markieren">
+                <div class="blocker-toggle-icon"><div class="blocker-toggle-knob"></div></div>
+                <span>Blockieren</span>
+            </div>
             <div class="stat">
                 <div class="stat-value" id="stat-total">0</div>
                 <div class="stat-label">Termine</div>
@@ -571,6 +639,10 @@
                 <div class="legend-item">
                     <div class="legend-color empty"></div>
                     <span>Verfügbar</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color blocked"></div>
+                    <span>Blockiert</span>
                 </div>
             </div>
         </div>
@@ -816,6 +888,8 @@
         }
 
         let appointments = [];
+        let blockedSlots = [];
+        let blockerMode = false;
         let currentWeekStart = getWeekStart(new Date());
         let draggedAppointment = null;
         let pendingMove = null;
@@ -868,6 +942,49 @@
             } catch(e) { console.error('Fehler:', e); }
         }
 
+        async function loadBlockedSlots() {
+            try {
+                const res = await fetch('/api/blocked-slots');
+                blockedSlots = await res.json();
+                renderRaster();
+            } catch(e) {
+                console.error('Fehler beim Laden der Blockierungen:', e);
+                blockedSlots = [];
+            }
+        }
+
+        function isSlotBlocked(date, time) {
+            return blockedSlots.some(s => s.date === date && s.time === time);
+        }
+
+        function toggleBlockerMode() {
+            blockerMode = !blockerMode;
+            document.getElementById('blockerToggle').classList.toggle('active', blockerMode);
+            renderRaster();
+        }
+
+        async function toggleBlockSlot(date, time) {
+            if (isSlotBlocked(date, time)) {
+                try {
+                    await fetch(`/api/blocked-slots/${date}/${encodeURIComponent(time)}`, { method: 'DELETE' });
+                    blockedSlots = blockedSlots.filter(s => !(s.date === date && s.time === time));
+                    showToast('Zeitblockierung entfernt');
+                    renderRaster();
+                } catch(e) { showToast('Fehler'); }
+            } else {
+                try {
+                    await fetch('/api/blocked-slots', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ date, time, reason: '' })
+                    });
+                    blockedSlots.push({ date, time, reason: '' });
+                    showToast('Zeitblock gesetzt');
+                    renderRaster();
+                } catch(e) { showToast('Fehler'); }
+            }
+        }
+
         function renderRaster() {
             const grid = document.getElementById('rasterGrid');
             grid.innerHTML = '';
@@ -905,38 +1022,58 @@
                     cell.dataset.date = dateStr;
                     cell.dataset.time = time;
 
-                    cell.addEventListener('dragover', handleDragOver);
-                    cell.addEventListener('dragleave', handleDragLeave);
-                    cell.addEventListener('drop', handleDrop);
+                    const blocked = isSlotBlocked(dateStr, time);
 
-                    if (slotAppts.length > 0) {
-                        const apt = slotAppts[0];
-                        const card = document.createElement('div');
-                        card.className = `appointment-card ${apt.status === 'bestaetigt' ? 'confirmed' : 'pending'}`;
-                        card.draggable = true;
-                        card.dataset.id = apt.id;
-                        const actionsHtml = apt.status === 'offen'
-                            ? `<div class="card-actions"><button class="btn-card-confirm" onclick="event.stopPropagation(); quickConfirm('${apt.id}')">OK</button><button class="btn-card-cancel" onclick="event.stopPropagation(); quickCancel('${apt.id}')">X</button></div>`
-                            : `<div class="card-actions"><button class="btn-card-cancel" onclick="event.stopPropagation(); quickCancel('${apt.id}')">X</button></div>`;
-                        const insuranceLabel = apt.insurance === 'privat' ? 'Privat' : 'Gesetzl.';
-                        card.innerHTML = `
-                            <div class="appointment-info">${apt.service || ''} · ${insuranceLabel}</div>
-                            <div class="appointment-name">${apt.name}</div>
-                            ${actionsHtml}
-                        `;
-                        cell.innerHTML = `<span class="slot-time">${time}</span>`;
-                        cell.appendChild(card);
-                        card.addEventListener('dragstart', handleDragStart);
-                        card.addEventListener('dragend', handleDragEnd);
-                        card.addEventListener('click', (e) => { e.stopPropagation(); openDetailModal(apt); });
+                    if (blocked) {
+                        cell.classList.add('blocked');
+                        cell.innerHTML = `<span class="slot-time">${time}</span><div class="blocked-label"><span class="blocked-icon">&#128683;</span>Blockiert</div>`;
+                        cell.addEventListener('click', () => {
+                            if (blockerMode) {
+                                toggleBlockSlot(dateStr, time);
+                            } else {
+                                showToast('Dieser Zeitblock ist blockiert');
+                            }
+                        });
                     } else {
-                        cell.innerHTML = `<span class="slot-time">${time}</span>`;
-                        const addBtn = document.createElement('button');
-                        addBtn.className = 'add-slot-btn';
-                        addBtn.innerHTML = '+';
-                        addBtn.addEventListener('click', (e) => { e.stopPropagation(); openNewModal(dateStr, time); });
-                        cell.appendChild(addBtn);
-                        cell.addEventListener('click', () => openNewModal(dateStr, time));
+                        cell.addEventListener('dragover', handleDragOver);
+                        cell.addEventListener('dragleave', handleDragLeave);
+                        cell.addEventListener('drop', handleDrop);
+
+                        if (slotAppts.length > 0) {
+                            const apt = slotAppts[0];
+                            const card = document.createElement('div');
+                            card.className = `appointment-card ${apt.status === 'bestaetigt' ? 'confirmed' : 'pending'}`;
+                            card.draggable = true;
+                            card.dataset.id = apt.id;
+                            const actionsHtml = apt.status === 'offen'
+                                ? `<div class="card-actions"><button class="btn-card-confirm" onclick="event.stopPropagation(); quickConfirm('${apt.id}')">OK</button><button class="btn-card-cancel" onclick="event.stopPropagation(); quickCancel('${apt.id}')">X</button></div>`
+                                : `<div class="card-actions"><button class="btn-card-cancel" onclick="event.stopPropagation(); quickCancel('${apt.id}')">X</button></div>`;
+                            const insuranceLabel = apt.insurance === 'privat' ? 'Privat' : 'Gesetzl.';
+                            card.innerHTML = `
+                                <div class="appointment-info">${apt.service || ''} · ${insuranceLabel}</div>
+                                <div class="appointment-name">${apt.name}</div>
+                                ${actionsHtml}
+                            `;
+                            cell.innerHTML = `<span class="slot-time">${time}</span>`;
+                            cell.appendChild(card);
+                            card.addEventListener('dragstart', handleDragStart);
+                            card.addEventListener('dragend', handleDragEnd);
+                            card.addEventListener('click', (e) => { e.stopPropagation(); openDetailModal(apt); });
+                        } else {
+                            cell.innerHTML = `<span class="slot-time">${time}</span>`;
+                            if (blockerMode) {
+                                cell.addEventListener('click', () => toggleBlockSlot(dateStr, time));
+                                cell.style.cursor = 'pointer';
+                                cell.title = 'Klicken zum Blockieren';
+                            } else {
+                                const addBtn = document.createElement('button');
+                                addBtn.className = 'add-slot-btn';
+                                addBtn.innerHTML = '+';
+                                addBtn.addEventListener('click', (e) => { e.stopPropagation(); openNewModal(dateStr, time); });
+                                cell.appendChild(addBtn);
+                                cell.addEventListener('click', () => openNewModal(dateStr, time));
+                            }
+                        }
                     }
 
                     slots.appendChild(cell);
@@ -999,7 +1136,8 @@
                 if (res.ok) {
                     lastMove = { id, oldDate, oldTime, newDate, newTime };
                     closeConfirmModal();
-                    loadAppointments();
+        loadAppointments();
+        loadBlockedSlots();
                     showUndoToast('Termin verschoben! E-Mail wurde gesendet.');
                 } else {
                     const err = await res.json();
@@ -1198,6 +1336,11 @@
             const name = document.getElementById('newName').value.trim();
             const email = document.getElementById('newEmail').value.trim();
             if (!name || !email) { alert('Name und E-Mail sind Pflichtfelder.'); return; }
+            if (isSlotBlocked(newModalDate, newModalTime)) {
+                alert('Dieser Zeitblock ist blockiert. Bitte wählen Sie einen anderen Termin.');
+                closeNewModal();
+                return;
+            }
             const data = {
                 name, email,
                 phone: document.getElementById('newPhone').value,
