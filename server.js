@@ -572,17 +572,21 @@ app.post('/api/vacation', requireAuth, async (req, res) => {
         return res.status(500).json({ error: 'Antrag fehlgeschlagen: ' + error.message });
     }
     res.json({ success: true });
-    res.json({ success: true });
 });
 
 app.put('/api/vacation/:id', requireAuth, async (req, res) => {
     const { status } = req.body;
+
+    // Update mit nur status — reviewed_by/reviewed_at nur wenn Spalten existieren
     const { error } = await supabase
         .from('vacation')
-        .update({ status, reviewed_by: req.userId, reviewed_at: new Date().toISOString() })
+        .update({ status })
         .eq('id', req.params.id);
 
-    if (error) return res.status(500).json({ error: 'Update fehlgeschlagen' });
+    if (error) {
+        console.error('Vacation update error:', error.message);
+        return res.status(500).json({ error: 'Update fehlgeschlagen: ' + error.message });
+    }
 
     // E-Mail an Mitarbeiter
     const { data: vacation } = await supabase
