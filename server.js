@@ -598,6 +598,12 @@ async function getUsedVacationDays(employee) {
     return (approved || []).reduce((sum, v) => sum + v.days, 0);
 }
 
+app.get('/api/vacation/balance/:employee', async (req, res) => {
+    const employee = decodeURIComponent(req.params.employee);
+    const used = await getUsedVacationDays(employee);
+    res.json({ total: VACATION_DAYS_PER_YEAR, used, remaining: VACATION_DAYS_PER_YEAR - used });
+});
+
 // ==================== WOCHENPLAN PIN ====================
 
 const WOCHENPLAN_PIN = process.env.WOCHENPLAN_PIN || '3911';
