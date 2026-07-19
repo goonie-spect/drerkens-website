@@ -48,6 +48,9 @@ function initEmailTransporter() {
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Wochenplan PIN
+const WOCHENPLAN_PIN = process.env.WOCHENPLAN_PIN || '3911';
+
 // Passwort Hashing
 function hashPassword(password, salt) {
     salt = salt || crypto.randomBytes(16).toString('hex');
@@ -95,6 +98,24 @@ async function getSession(sessionId) {
 async function requireAuth(req, res, next) {
     const sessionId = req.headers.authorization?.replace('Bearer ', '');
     if (!sessionId) return res.status(401).json({ error: 'Nicht eingeloggt' });
+
+    // Pruefe zuerst Wochenplan HMAC-Token
+    try {
+        const parts = sessionId.split('.');
+        if (parts.length === 2) {
+            const data = Buffer.from(parts[0], 'base64').toString('utf-8');
+            const expectedSig = crypto.createHmac('sha256', WOCHENPLAN_PIN).update(data).digest('hex');
+            if (parts[1] === expectedSig) {
+                const payload = JSON.parse(data);
+                if (Date.now() <= payload.exp) {
+                    req.userId = 'wochenplan:' + payload.role;
+                    return next();
+                }
+            }
+        }
+    } catch(e) {}
+
+    // Fallback: Datenbank-Session
     const session = await getSession(sessionId);
     if (!session) return res.status(401).json({ error: 'Session abgelaufen' });
     req.userId = session.user_id;
@@ -607,8 +628,6 @@ app.get('/api/vacation/balance/:employee', async (req, res) => {
 });
 
 // ==================== WOCHENPLAN PIN ====================
-
-const WOCHENPLAN_PIN = process.env.WOCHENPLAN_PIN || '3911';
 
 app.post('/api/wochenplan/login', async (req, res) => {
     try {
