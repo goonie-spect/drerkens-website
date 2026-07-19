@@ -831,10 +831,12 @@
                     .then(d => {
                         if (d.success) {
                             document.getElementById('loginOverlay').style.display = 'none';
-                            document.getElementById('navUserName').textContent = d.role;
-                            if (d.role === 'Dr. Erkens') {
-                                document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
-                            }
+                    document.getElementById('navUserName').textContent = d.role;
+                    if (d.role === 'Dr. Erkens') {
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                    } else if (d.role === 'Assistenz') {
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="mitarbeiter.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                    }
                         }
                     });
                 return;
@@ -876,6 +878,8 @@
                     document.getElementById('navUserName').textContent = data.role;
                     if (data.role === 'Dr. Erkens') {
                         document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                    } else if (data.role === 'Assistenz') {
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="mitarbeiter.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
                     }
                 } else {
                     document.getElementById('loginError').style.display = 'block';

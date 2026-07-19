@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitarbeiter-Dashboard | Dr. Erkens</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f7fa; color: #1a1a2e; }
+        .top-nav { background: linear-gradient(135deg, #1a6b5c, #0f4a3f); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .top-nav h2 { color: white; font-size: 1.2rem; }
+        .nav-links { display: flex; gap: 10px; align-items: center; }
+        .nav-links a, .nav-links button { color: white; text-decoration: none; border: 2px solid rgba(255,255,255,0.5); padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; transition: all 0.3s; background: transparent; cursor: pointer; font-family: inherit; }
+        .nav-links a:hover, .nav-links button:hover { background: white; color: #1a6b5c; border-color: white; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .welcome-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .welcome-card h1 { font-size: 1.6rem; margin-bottom: 8px; }
+        .welcome-card p { color: #666; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-header h2 { font-size: 1.3rem; }
+        .appointments-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+        .appointment-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s; }
+        .appointment-card:hover { transform: translateY(-2px); }
+        .apt-info { flex: 1; }
+        .apt-date { font-size: 1.1rem; font-weight: 600; color: #1a6b5c; margin-bottom: 4px; }
+        .apt-time { font-size: 0.95rem; color: #1a1a2e; margin-bottom: 8px; }
+        .apt-service { font-size: 0.85rem; color: #666; }
+        .apt-status { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-offen { background: #fff3cd; color: #856404; }
+        .status-bestaetigt { background: #d4edda; color: #155724; }
+        .status-abgesagt { background: #f8d7da; color: #721c24; }
+        .no-appointments { background: white; border-radius: 12px; padding: 50px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); color: #666; }
+        .no-appointments h3 { margin-bottom: 10px; color: #1a1a2e; }
+
+        .vacation-section { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .vacation-section h3 { font-size: 1.1rem; margin-bottom: 15px; color: #1a1a2e; }
+        .vacation-balance { display: flex; gap: 15px; margin-bottom: 20px; }
+        .vacation-balance-item { flex: 1; background: #f8f9fa; border-radius: 10px; padding: 15px; text-align: center; }
+        .vacation-balance-value { font-size: 1.8rem; font-weight: 700; color: #1a6b5c; }
+        .vacation-balance-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+        .vacation-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .vacation-form .form-group { margin-bottom: 0; }
+        .vacation-form label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.85rem; color: #555; }
+        .vacation-form input { width: 100%; padding: 10px 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 0.9rem; }
+        .vacation-form input:focus { outline: none; border-color: #1a6b5c; }
+        .vacation-form .full-width { grid-column: 1 / -1; }
+        .vacation-form .btn-submit { grid-column: 1 / -1; background: #1a6b5c; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .vacation-form .btn-submit:hover { background: #0f4a3f; }
+        .vacation-days-info { margin-bottom: 12px; padding: 10px; background: #e8f5f2; border-radius: 8px; font-size: 0.85rem; display: none; grid-column: 1 / -1; }
+        .vacation-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .vacation-list-item:last-child { border-bottom: none; }
+        .vacation-list-info { flex: 1; }
+        .vacation-list-dates { font-weight: 600; color: #1a6b5c; }
+        .vacation-list-meta { font-size: 0.85rem; color: #666; margin-top: 2px; }
+        .vacation-status { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .vacation-status.offen { background: #fff3cd; color: #856404; }
+        .vacation-status.genehmigt { background: #d4edda; color: #155724; }
+        .vacation-status.abgelehnt { background: #f8d7da; color: #721c24; }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1a6b5c; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 2000; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 600px) {
+            .vacation-balance { flex-direction: column; }
+            .vacation-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" style="position:fixed; inset:0; background:#f5f7fa; z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div style="background:white; padding:40px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; width:380px;">
+            <div style="font-size:2.5rem; margin-bottom:10px;">&#129489;&#8205;&#9877;&#65039;</div>
+            <h2 style="margin-bottom:8px; color:#1a1a2e;">Mitarbeiter-Zugang</h2>
+            <p style="color:#666; margin-bottom:20px; font-size:0.9rem;">Bitte Code eingeben</p>
+            <div style="margin-bottom:20px;">
+                <input id="pinInput" type="password" maxlength="4" placeholder="&#8226;&#8226;&#8226;&#8226;" style="width:100%; padding:14px; font-size:1.5rem; text-align:center; border:2px solid #ddd; border-radius:10px; letter-spacing:12px; outline:none;" onkeydown="if(event.key==='Enter') checkPin()">
+            </div>
+            <button onclick="checkPin()" style="width:100%; padding:14px; background:#1a6b5c; color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer;">Einloggen</button>
+            <p id="loginError" style="color:#dc3545; font-size:0.85rem; display:none; margin-top:12px;">Falscher Code</p>
+            <div style="margin-top:16px;"><a href="index.html" style="color:#666; text-decoration:none; font-size:0.85rem;">&#8592; Zurück zur Startseite</a></div>
+        </div>
+    </div>
+
+    <nav class="top-nav">
+        <h2>Dr. Erkens</h2>
+        <div class="nav-links">
+            <a href="wochenplan.html">Wochenplan</a>
+            <a href="mitarbeiter.html" class="active" style="background:white; color:#1a6b5c;">Dashboard</a>
+            <button onclick="logout()">Abmelden</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-card">
+            <h1>Willkommen, <span id="welcomeName"></span>!</h1>
+            <p>Ihre Termine und Urlaubsanträge auf einen Blick.</p>
+        </div>
+
+        <div class="section-header">
+            <h2>Meine Termine</h2>
+        </div>
+        <div class="appointments-list" id="appointmentsList">
+            <div class="no-appointments"><h3>Lade Termine...</h3></div>
+        </div>
+
+        <div class="vacation-section">
+            <h3>&#127958;&#65039; Urlaub beantragen</h3>
+            <div class="vacation-balance">
+                <div class="vacation-balance-item">
+                    <div class="vacation-balance-value" id="vacTotal">30</div>
+                    <div class="vacation-balance-label">Tage gesamt</div>
+                </div>
+                <div class="vacation-balance-item">
+                    <div class="vacation-balance-value" id="vacUsed">0</div>
+                    <div class="vacation-balance-label">Genommen</div>
+                </div>
+                <div class="vacation-balance-item">
+                    <div class="vacation-balance-value" id="vacRemaining">30</div>
+                    <div class="vacation-balance-label">Übrig</div>
+                </div>
+            </div>
+            <form class="vacation-form" onsubmit="submitVacation(event)">
+                <div class="form-group">
+                    <label>Von *</label>
+                    <input type="date" id="vacStart" required onchange="calcVacDays()">
+                </div>
+                <div class="form-group">
+                    <label>Bis *</label>
+                    <input type="date" id="vacEnd" required onchange="calcVacDays()">
+                </div>
+                <div class="vacation-days-info" id="vacDaysInfo">
+                    <strong id="vacDaysCount">0</strong> Urlaubstage werden beantragt
+                </div>
+                <div class="form-group full-width">
+                    <label>Grund</label>
+                    <input type="text" id="vacReason" placeholder="Optional">
+                </div>
+                <button type="submit" class="btn-submit">Antrag stellen</button>
+            </form>
+
+            <h3 style="margin-top: 10px;">Meine Anträge</h3>
+            <div id="vacationList">
+                <p style="color: #666; font-size: 0.9rem;">Lade Anträge...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let sessionToken = null;
+        let employeeName = 'Assistenz';
+
+        // Check existing session
+        (function() {
+            const token = sessionStorage.getItem('mitarbeiter_session');
+            if (token) {
+                verifySession(token);
+            }
+        })();
+
+        function checkPin() {
+            const pin = document.getElementById('pinInput').value;
+            if (!pin) return;
+            fetch('/api/wochenplan/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin, role: 'Assistenz' })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('mitarbeiter_session', data.sessionId);
+                    sessionStorage.setItem('mitarbeiter_role', data.role);
+                    sessionToken = data.sessionId;
+                    employeeName = data.role;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('welcomeName').textContent = data.role;
+                    loadAll();
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                    document.getElementById('pinInput').value = '';
+                }
+            }).catch(() => {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('pinInput').value = '';
+            });
+        }
+
+        async function verifySession(token) {
+            try {
+                const res = await fetch('/api/wochenplan/verify', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    sessionToken = token;
+                    employeeName = data.role;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('welcomeName').textContent = data.role;
+                    loadAll();
+                } else {
+                    sessionStorage.removeItem('mitarbeiter_session');
+                }
+            } catch(e) {
+                sessionStorage.removeItem('mitarbeiter_session');
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('mitarbeiter_session');
+            sessionStorage.removeItem('mitarbeiter_role');
+            window.location.href = 'index.html';
+        }
+
+        function loadAll() {
+            loadAppointments();
+            loadVacationBalance();
+            loadMyVacations();
+        }
+
+        // ==================== APPOINTMENTS ====================
+        async function loadAppointments() {
+            try {
+                const res = await fetch('/api/appointments');
+                const all = await res.json();
+                const mine = all.filter(a => a.assigned_to === 'Assistenz' && a.status !== 'abgesagt');
+                renderAppointments(mine);
+            } catch(e) {
+                console.error('Fehler:', e);
+            }
+        }
+
+        function renderAppointments(appointments) {
+            const list = document.getElementById('appointmentsList');
+            if (appointments.length === 0) {
+                list.innerHTML = '<div class="no-appointments"><h3>Keine Termine zugewiesen</h3><p>Sie haben aktuell keine zugewiesenen Termine.</p></div>';
+                return;
+            }
+            appointments.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+            const statusMap = { offen: 'Offen', bestaetigt: 'Bestätigt', abgesagt: 'Abgesagt' };
+            list.innerHTML = appointments.map(apt => {
+                const dateFormatted = new Date(apt.date).toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+                return `
+                    <div class="appointment-card">
+                        <div class="apt-info">
+                            <div class="apt-date">${dateFormatted}</div>
+                            <div class="apt-time">&#128336; ${apt.time} Uhr</div>
+                            <div class="apt-service">${apt.service || 'Keine Leistung'} · ${apt.name}</div>
+                        </div>
+                        <div class="apt-status status-${apt.status}">${statusMap[apt.status] || apt.status}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== URLAUB ====================
+        async function loadVacationBalance() {
+            try {
+                const res = await fetch(`/api/vacation/balance/${encodeURIComponent(employeeName)}`);
+                const data = await res.json();
+                document.getElementById('vacTotal').textContent = data.total;
+                document.getElementById('vacUsed').textContent = data.used;
+                document.getElementById('vacRemaining').textContent = data.remaining;
+            } catch(e) { console.error('Fehler:', e); }
+        }
+
+        async function loadMyVacations() {
+            try {
+                const res = await fetch(`/api/vacation?employee=${encodeURIComponent(employeeName)}`);
+                const requests = await res.json();
+                renderMyVacations(requests);
+            } catch(e) { console.error('Fehler:', e); }
+        }
+
+        function renderMyVacations(requests) {
+            const container = document.getElementById('vacationList');
+            if (requests.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-size: 0.9rem;">Noch keine Urlaubsanträge gestellt.</p>';
+                return;
+            }
+            const statusMap = { offen: 'Offen', genehmigt: 'Genehmigt', abgelehnt: 'Abgelehnt' };
+            container.innerHTML = requests.map(v => {
+                const start = new Date(v.start_date).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+                const end = new Date(v.end_date).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+                return `
+                    <div class="vacation-list-item">
+                        <div class="vacation-list-info">
+                            <div class="vacation-list-dates">${start} — ${end}</div>
+                            <div class="vacation-list-meta">${v.days} Tage · ${v.reason || 'Kein Grund angegeben'}</div>
+                        </div>
+                        <span class="vacation-status ${v.status}">${statusMap[v.status] || v.status}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function calcVacDays() {
+            const start = document.getElementById('vacStart').value;
+            const end = document.getElementById('vacEnd').value;
+            if (!start || !end) return;
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            let days = 0;
+            const current = new Date(startDate);
+            while (current <= endDate) {
+                const day = current.getDay();
+                if (day !== 0 && day !== 6) days++;
+                current.setDate(current.getDate() + 1);
+            }
+            document.getElementById('vacDaysCount').textContent = days;
+            document.getElementById('vacDaysInfo').style.display = 'block';
+        }
+
+        async function submitVacation(e) {
+            e.preventDefault();
+            const start = document.getElementById('vacStart').value;
+            const end = document.getElementById('vacEnd').value;
+            const reason = document.getElementById('vacReason').value;
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            let days = 0;
+            const current = new Date(startDate);
+            while (current <= endDate) {
+                const day = current.getDay();
+                if (day !== 0 && day !== 6) days++;
+                current.setDate(current.getDate() + 1);
+            }
+            try {
+                const res = await fetch('/api/vacation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionToken}`
+                    },
+                    body: JSON.stringify({ employee: employeeName, start_date: start, end_date: end, days, reason })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showToast('Urlaubsantrag gestellt!');
+                    e.target.reset();
+                    document.getElementById('vacDaysInfo').style.display = 'none';
+                    loadVacationBalance();
+                    loadMyVacations();
+                } else {
+                    showToast(result.error || 'Fehler');
+                }
+            } catch(err) {
+                showToast('Verbindungsfehler');
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
