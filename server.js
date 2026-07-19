@@ -512,7 +512,7 @@ app.get('/api/vacation', async (req, res) => {
 });
 
 app.post('/api/vacation', requireAuth, async (req, res) => {
-    const { employee, start_date, end_date, days, reason } = req.body;
+    const { employee, start_date, end_date, days, reason, coverage } = req.body;
     if (!employee || !start_date || !end_date || !days) {
         return res.status(400).json({ error: 'Pflichtfelder fehlen' });
     }
@@ -531,6 +531,7 @@ app.post('/api/vacation', requireAuth, async (req, res) => {
             end_date,
             days,
             reason: reason || '',
+            coverage: coverage || 'Ungeklärt',
             status: 'offen',
             created_by: req.userId,
             created_at: new Date().toISOString()
@@ -567,6 +568,7 @@ app.put('/api/vacation/:id', requireAuth, async (req, res) => {
                     <p><strong>Mitarbeiter:</strong> ${vacation.employee}</p>
                     <p><strong>Zeitraum:</strong> ${vacation.start_date} bis ${vacation.end_date}</p>
                     <p><strong>Tage:</strong> ${vacation.days}</p>
+                    <p><strong>Vertretung:</strong> ${vacation.coverage || 'Ungeklärt'}</p>
                     <p><strong>Status:</strong> ${status}</p>
                 `
             });

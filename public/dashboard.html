@@ -458,6 +458,10 @@
                     <label>Grund</label>
                     <input type="text" id="vacReason" placeholder="Optional">
                 </div>
+                <div class="form-group full-width">
+                    <label>Wer übernimmt die Stelle?</label>
+                    <input type="text" id="vacCoverage" placeholder="Name oder ungeklärt">
+                </div>
                 <button type="submit" class="btn-submit">Antrag stellen</button>
             </form>
 
@@ -687,7 +691,7 @@
                     <div class="vacation-list-item">
                         <div class="vacation-list-info">
                             <div class="vacation-list-dates">${start} — ${end}</div>
-                            <div class="vacation-list-meta">${v.days} Tage · ${v.reason || 'Kein Grund angegeben'}</div>
+                            <div class="vacation-list-meta">${v.days} Tage · ${v.reason || 'Kein Grund angegeben'} · Vertretung: ${v.coverage || 'Ungeklärt'}</div>
                         </div>
                         <span class="vacation-status ${v.status}">${statusMap[v.status] || v.status}</span>
                     </div>
@@ -717,6 +721,7 @@
             const start = document.getElementById('vacStart').value;
             const end = document.getElementById('vacEnd').value;
             const reason = document.getElementById('vacReason').value;
+            const coverage = document.getElementById('vacCoverage').value;
 
             const startDate = new Date(start);
             const endDate = new Date(end);
@@ -740,7 +745,8 @@
                         start_date: start,
                         end_date: end,
                         days,
-                        reason
+                        reason,
+                        coverage
                     })
                 });
                 const result = await res.json();

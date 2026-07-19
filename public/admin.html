@@ -391,6 +391,12 @@
                             <input type="date" id="vacEnd" required onchange="calcVacDays()">
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Wer übernimmt die Stelle?</label>
+                            <input type="text" id="vacCoverage" placeholder="Name oder ungeklärt">
+                        </div>
+                    </div>
                     <div id="vacDaysInfo" style="margin-bottom: 16px; padding: 10px; background: #e8f5f2; border-radius: 8px; font-size: 0.9rem; display: none;">
                         <strong id="vacDaysCount">0</strong> Urlaubstage werden beantragt
                     </div>
@@ -411,6 +417,7 @@
                                 <th>Bis</th>
                                 <th>Tage</th>
                                 <th>Grund</th>
+                                <th>Vertretung</th>
                                 <th>Status</th>
                                 <th>Aktion</th>
                             </tr>
@@ -701,7 +708,7 @@
         function renderVacation(requests) {
             const tbody = document.getElementById('vacationTable');
             if (requests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #888;">Keine Urlaubsanträge</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #888;">Keine Urlaubsanträge</td></tr>';
                 return;
             }
             tbody.innerHTML = requests.map(v => `
@@ -711,6 +718,7 @@
                     <td>${new Date(v.end_date).toLocaleDateString('de-DE')}</td>
                     <td>${v.days}</td>
                     <td>${v.reason || '-'}</td>
+                    <td>${v.coverage || 'Ungeklärt'}</td>
                     <td><span style="color: ${vacStatusColors[v.status]}; font-weight: 600;">${vacStatusMap[v.status]}</span></td>
                     <td>
                         ${v.status === 'offen' ? `
@@ -760,7 +768,8 @@
                 employee: document.getElementById('vacEmployee').value,
                 start_date: document.getElementById('vacStart').value,
                 end_date: document.getElementById('vacEnd').value,
-                reason: document.getElementById('vacReason').value
+                reason: document.getElementById('vacReason').value,
+                coverage: document.getElementById('vacCoverage').value
             };
             
             try {
