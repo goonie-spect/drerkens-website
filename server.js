@@ -450,7 +450,10 @@ app.get('/api/blocked-slots', async (req, res) => {
         const { data, error } = await supabase
             .from('blocked_slots')
             .select('*');
-        if (error) return res.status(500).json({ error: 'Fehler beim Laden' });
+    if (error) {
+        console.error('Work schedule error:', error.message);
+        return res.status(500).json({ error: 'Fehler beim Laden: ' + error.message });
+    }
         res.json(data || []);
     } catch(e) {
         res.json([]);
