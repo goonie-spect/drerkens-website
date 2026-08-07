@@ -596,9 +596,7 @@
 
     <nav class="top-nav">
         <h2 id="navUserName" style="cursor: pointer;" onclick="showAdminLogin()" title="Admin Panel">Wochenplan</h2>
-        <div class="top-nav-links">
-            <a href="wochenplan.html" class="active">Wochenplan</a>
-        </div>
+        <div class="top-nav-links"></div>
     </nav>
 
     <div class="toolbar">
@@ -773,6 +771,19 @@
         </div>
     </div>
 
+    <!-- Zeitblock Modal: Block aufheben -->
+    <div class="modal" id="blockModal">
+        <div class="modal-content" style="max-width:360px; text-align:center;">
+            <h2 style="justify-content:center;"><span class="blocked-icon">&#128683;</span> Zeitblock</h2>
+            <p id="blockModalInfo" style="color:#666; margin-bottom:8px; font-size:0.95rem;"></p>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:20px;">Dieser Zeitpunkt ist blockiert und für Patienten nicht buchbar.</p>
+            <div class="modal-actions">
+                <button class="btn-delete" onclick="unblockSlot()">Block aufheben</button>
+                <button class="btn-cancel" onclick="closeBlockModal()">Schließen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Neuer Termin Modal -->
     <div class="modal" id="newModal">
         <div class="modal-content">
@@ -836,9 +847,9 @@
                             document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('navUserName').textContent = d.role;
                     if (d.role === 'Dr. Erkens') {
-                        document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a>';
                     } else if (d.role === 'Assistenz' || d.role === 'Praxis') {
-                        document.querySelector('.top-nav-links').innerHTML = '<a href="mitarbeiter.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="mitarbeiter.html">Dashboard</a>';
                     }
                         }
                     });
@@ -880,9 +891,9 @@
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('navUserName').textContent = data.role;
                     if (data.role === 'Dr. Erkens') {
-                        document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="admin.html">Dashboard</a>';
                     } else if (data.role === 'Assistenz' || data.role === 'Praxis') {
-                        document.querySelector('.top-nav-links').innerHTML = '<a href="mitarbeiter.html">Dashboard</a><a href="wochenplan.html" class="active">Wochenplan</a>';
+                        document.querySelector('.top-nav-links').innerHTML = '<a href="mitarbeiter.html">Dashboard</a>';
                     }
                 } else {
                     document.getElementById('loginError').style.display = 'block';
@@ -973,23 +984,53 @@
         async function toggleBlockSlot(date, time) {
             if (isSlotBlocked(date, time)) {
                 try {
-                    await fetch(`/api/blocked-slots/${date}/${encodeURIComponent(time)}`, { method: 'DELETE' });
+                    const res = await fetch(`/api/blocked-slots/${date}/${encodeURIComponent(time)}`, { method: 'DELETE' });
+                    if (!res.ok) { showToast('Aufheben fehlgeschlagen'); return; }
                     blockedSlots = blockedSlots.filter(s => !(s.date === date && s.time === time));
                     showToast('Zeitblockierung entfernt');
                     renderRaster();
                 } catch(e) { showToast('Fehler'); }
             } else {
                 try {
-                    await fetch('/api/blocked-slots', {
+                    const res = await fetch('/api/blocked-slots', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ date, time, reason: '' })
                     });
+                    if (!res.ok) { showToast('Blockieren fehlgeschlagen'); return; }
                     blockedSlots.push({ date, time, reason: '' });
                     showToast('Zeitblock gesetzt');
                     renderRaster();
                 } catch(e) { showToast('Fehler'); }
             }
+        }
+
+        let currentBlock = null;
+        function openBlockModal(date, time) {
+            currentBlock = { date, time };
+            document.getElementById('blockModalInfo').textContent = formatDateLong(date) + ' um ' + time + ' Uhr';
+            document.getElementById('blockModal').classList.add('active');
+        }
+        function closeBlockModal() {
+            currentBlock = null;
+            document.getElementById('blockModal').classList.remove('active');
+        }
+        async function unblockSlot() {
+            if (!currentBlock) return;
+            const { date, time } = currentBlock;
+            try {
+                const res = await fetch(`/api/blocked-slots/${date}/${encodeURIComponent(time)}`, { method: 'DELETE' });
+                if (res.ok) {
+                    blockedSlots = blockedSlots.filter(s => !(s.date === date && s.time === time));
+                    showToast('Zeitblock aufgehoben');
+                } else {
+                    showToast('Aufheben fehlgeschlagen');
+                }
+            } catch(e) {
+                showToast('Fehler beim Aufheben');
+            }
+            closeBlockModal();
+            renderRaster();
         }
 
         function renderRaster() {
@@ -1038,7 +1079,7 @@
                             if (blockerMode) {
                                 toggleBlockSlot(dateStr, time);
                             } else {
-                                showToast('Dieser Zeitblock ist blockiert');
+                                openBlockModal(dateStr, time);
                             }
                         });
                     } else {
@@ -1392,7 +1433,15 @@
             }
         }
 
+        document.getElementById('blockModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeBlockModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeBlockModal();
+        });
+
         loadAppointments();
+        loadBlockedSlots();
     </script>
 </body>
 </html>
