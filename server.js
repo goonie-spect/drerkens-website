@@ -213,7 +213,7 @@ app.get('/api/appointments', async (req, res) => {
 });
 
 app.post('/api/appointments', async (req, res) => {
-    const { name, email, phone, service, date, time, notes } = req.body;
+    const { name, email, phone, service, insurance, date, time, message, notes } = req.body;
     if (!name || !email || !service || !date || !time) {
         return res.status(400).json({ error: 'Pflichtfelder fehlen' });
     }
@@ -225,9 +225,10 @@ app.post('/api/appointments', async (req, res) => {
             email,
             phone: phone || '',
             service,
+            insurance: insurance || 'gesetzlich',
             date,
             time,
-            notes: notes || '',
+            message: message || notes || '',
             status: 'offen',
             created_at: new Date().toISOString()
         })

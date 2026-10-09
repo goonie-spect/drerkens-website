@@ -570,7 +570,7 @@
                 <li><a href="diagnostik.html">Diagnostik</a></li>
                 <li><a href="therapie.html">Therapie</a></li>
                 <li><a href="#ueber">Über mich</a></li>
-                <li><a href="#kontakt" class="nav-cta">Termin vereinbaren</a></li>
+                <li><a href="#termin" class="nav-cta">Termin vereinbaren</a></li>
             </ul>
             <div class="mobile-toggle" id="mobileToggle">
                 <span></span>
@@ -596,7 +596,7 @@
                     Gemeinsam bringen wir Ihren Körper zurück in seine natürliche, schmerzfreie Balance.
                 </p>
                 <div class="hero-buttons">
-                    <a href="#kontakt" class="btn btn-primary">
+                    <a href="#termin" class="btn btn-primary">
                         Termin vereinbaren
                         <span>&#8594;</span>
                     </a>
@@ -620,6 +620,90 @@
                             <div class="stat-label">Patienten</div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section class="booking-section" id="termin">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label">Terminbuchung</span>
+                <h2>Neuen Termin buchen</h2>
+                <p>Füllen Sie das Formular aus und wir melden uns bei Ihnen.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-form fade-in">
+                    <form id="bookingForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bookingName">Name *</label>
+                                <input type="text" id="bookingName" required placeholder="Ihr vollständiger Name" autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingEmail">E-Mail *</label>
+                                <input type="email" id="bookingEmail" required placeholder="ihre@email.de" autocomplete="email">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bookingPhone">Telefon</label>
+                                <input type="tel" id="bookingPhone" placeholder="Ihre Telefonnummer" autocomplete="tel">
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingService">Leistung *</label>
+                                <select id="bookingService" required>
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="Erstuntersuchung">Erstuntersuchung</option>
+                                    <option value="Kontrolluntersuchung">Kontrolluntersuchung</option>
+                                    <option value="Prophylaxe">Prophylaxe</option>
+                                    <option value="Zahnheilkunde">Zahnheilkunde</option>
+                                    <option value="Kieferorthopädie">Kieferorthopädie</option>
+                                    <option value="Implantologie">Implantologie</option>
+                                    <option value="Ästhetische Zahnheilkunde">Ästhetische Zahnheilkunde</option>
+                                    <option value="Notfallversorgung">Notfallversorgung</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bookingDate">Gewünschtes Datum *</label>
+                                <input type="date" id="bookingDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bookingTime">Gewünschte Uhrzeit *</label>
+                                <select id="bookingTime" required>
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="08:00">08:00</option>
+                                    <option value="08:30">08:30</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="09:30">09:30</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="10:30">10:30</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="11:30">11:30</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="14:30">14:30</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="15:30">15:30</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="16:30">16:30</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="17:30">17:30</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bookingNotes">Anmerkungen</label>
+                            <textarea id="bookingNotes" placeholder="Optionale Notiz zu Ihrem Anliegen"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                            Termin anfragen
+                            <span>&#8594;</span>
+                        </button>
+                    </form>
+                    <div id="bookingStatus" style="display:none; margin-top: 1rem; padding: 1rem; border-radius: 10px; font-weight: 500;"></div>
                 </div>
             </div>
         </div>
@@ -809,7 +893,7 @@
                             <span>Marathonläufer</span>
                         </div>
                     </div>
-                    <a href="#kontakt" class="btn btn-primary">
+                    <a href="#termin" class="btn btn-primary">
                         Termin vereinbaren
                         <span>&#8594;</span>
                     </a>
@@ -843,8 +927,8 @@
             <h2>Bereit für Ihre schmerzfreie Zukunft?</h2>
             <p>Vereinbaren Sie jetzt Ihren Termin und starten Sie den Weg zurück in Ihre natürliche Balance.</p>
             <div class="cta-buttons">
-                <a href="tel:+4928219736381" class="btn btn-white">
-                    Jetzt anrufen
+                <a href="#termin" class="btn btn-white">
+                    Jetzt Termin buchen
                 </a>
                 <a href="#kontakt" class="btn btn-secondary">
                     Kontaktformular
@@ -858,7 +942,7 @@
         <div class="container">
             <div class="section-header fade-in">
                 <span class="section-label">Kontakt</span>
-                <h2>Termin vereinbaren</h2>
+                <h2>Sprechen Sie uns an</h2>
                 <p>Wir nehmen uns Zeit für Sie. Vereinbaren Sie jetzt Ihren persönlichen Termin.</p>
             </div>
             <div class="contact-grid">
@@ -894,7 +978,7 @@
                     </div>
                 </div>
                 <div class="contact-form fade-in">
-                    <form>
+                    <form id="contactForm">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="name">Name</label>
@@ -952,7 +1036,7 @@
                 <ul>
                     <li><a href="tel:+4928219736381">0 28 21 – 97 36 38 1</a></li>
                     <li><a href="mailto:kontakt@drerkens.de">kontakt@drerkens.de</a></li>
-                    <li><a href="#">Termin vereinbaren</a></li>
+                    <li><a href="#termin">Termin vereinbaren</a></li>
                 </ul>
             </div>
         </div>
@@ -971,11 +1055,55 @@
 
     <script src="/main.js" defer></script>
     <script>
-        // Form submission
-        document.querySelector('form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Vielen Dank für Ihre Nachricht! Wir melden uns bald bei Ihnen.');
-        });
+        (function () {
+            const today = new Date();
+            today.setDate(today.getDate() + 1);
+            document.getElementById('bookingDate').min = today.toISOString().split('T')[0];
+
+            document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const status = document.getElementById('bookingStatus');
+                const data = {
+                    name: document.getElementById('bookingName').value,
+                    email: document.getElementById('bookingEmail').value,
+                    phone: document.getElementById('bookingPhone').value,
+                    service: document.getElementById('bookingService').value,
+                    date: document.getElementById('bookingDate').value,
+                    time: document.getElementById('bookingTime').value,
+                    notes: document.getElementById('bookingNotes').value
+                };
+                try {
+                    const res = await fetch('/api/appointments', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const body = await res.json();
+                    if (res.ok && body.success) {
+                        status.style.display = 'block';
+                        status.style.background = '#e6f4ea';
+                        status.style.color = '#1a7f37';
+                        status.textContent = 'Vielen Dank! Ihre Terminanfrage wurde übermittelt. Wir melden uns bei Ihnen.';
+                        e.target.reset();
+                    } else {
+                        status.style.display = 'block';
+                        status.style.background = '#fdecea';
+                        status.style.color = '#c0392b';
+                        status.textContent = (body && body.error) || 'Fehler beim Erstellen des Termins.';
+                    }
+                } catch (err) {
+                    status.style.display = 'block';
+                    status.style.background = '#fdecea';
+                    status.style.color = '#c0392b';
+                    status.textContent = 'Fehler beim Erstellen des Termins. Bitte versuchen Sie es später erneut.';
+                }
+            });
+
+            document.getElementById('contactForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Vielen Dank für Ihre Nachricht! Wir melden uns bald bei Ihnen.');
+            });
+        })();
     </script>
 </body>
 </html>
